@@ -1,0 +1,13 @@
+.button-container button {
+    flex: 1;
+    margin: 0 5px;
+  }
+  
+  .button-container button:first-child {
+    margin-left: 0;
+  }
+  
+  .button-container button:last-child {
+    margin-right: 0;
+  }
+  
