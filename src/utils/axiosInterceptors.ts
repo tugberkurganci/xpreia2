@@ -13,7 +13,7 @@ export const axiosAssets = axios.create({
   baseURL: `/assets`,
 });
 const axiosInstance = axios.create({
-  baseURL: `/api/v1`,
+  baseURL: `https://xperia-dsbo.onrender.com/api/v1`,
 });
 
 

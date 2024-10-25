@@ -5,10 +5,10 @@ import react from "@vitejs/plugin-react-swc";
 export default defineConfig({
   plugins: [react()],
   base: "/xperia2/",
-  server: {
-    proxy: {
-      "/api": "https://xperia-dsbo.onrender.com/"
+  //server: {
+   // proxy: {
+  //  "/api": "https://xperia-dsbo.onrender.com/"
       //"http://localhost:8080",
-    },
+    //},
   },
 });
