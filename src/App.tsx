@@ -14,7 +14,7 @@ function App() {
       
       <Navbar />
       <div className="  app d-flex justify-content-center mt-2 mb-5  px-3 ">
-        <Routes >
+        <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />

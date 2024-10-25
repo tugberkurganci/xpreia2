@@ -11,7 +11,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 injectStore(store)
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <Provider store={store}>  <BrowserRouter>
+  <Provider store={store}>  <BrowserRouter basename='/xpreia2/'>
     <ToastContainer
         position="top-right"
         autoClose={8000}
