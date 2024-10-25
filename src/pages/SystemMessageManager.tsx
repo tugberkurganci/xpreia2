@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import './System.css';
 import axiosInstance from '../utils/axiosInterceptors';
 

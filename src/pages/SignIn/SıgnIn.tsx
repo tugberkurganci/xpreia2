@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Formik, Form, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -16,9 +15,8 @@ type SignInFormValues = {
   password: string;
 };
 
-type Props = {};
 
-const SignIn = (props: Props) => {
+const SignIn = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();

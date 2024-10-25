@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { CgProfile } from "react-icons/cg";
@@ -7,9 +7,9 @@ import { CiLogin } from "react-icons/ci";
 import "./navbar.css";
 import { logoutSuccess } from "../../store/authStore/AuthSlice";
 
-type Props = {};
 
-const Navbar = (props: Props) => {
+
+const Navbar = () => {
   const [activeKey, setActiveKey] = useState<string>("home");
   const navigate = useNavigate();
   const dispatch = useDispatch();

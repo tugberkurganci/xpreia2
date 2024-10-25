@@ -150,7 +150,7 @@ const AdminPanel: React.FC = () => {
                     }
                   }}
                 >
-                  <Tab eventKey="email-types" title={<span><Mail className="tab-icon" /> Email Types</span>}>
+                  <Tab eventKey="email-types" title={<span><Mail className="tab-icon" /> Email Types{editingId}</span>}>
                     <div className="section">
                       <Button className="action-button" onClick={() => setEditingId('new-email')}>
                         <Plus className="button-icon" />

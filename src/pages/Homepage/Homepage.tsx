@@ -1,7 +1,6 @@
 import React from 'react';
 import './homepage.css';
 import TrainingDataUpload from '../TraningDataUpload';
-import EmailCampaigns from '../EmailCampaings';
 import SystemMessageManager from '../SystemMessageManager';
 import MainComponent from '../MainComponent';
 

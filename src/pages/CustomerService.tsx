@@ -21,7 +21,7 @@ const CustomerService: React.FC = () => {
 
   const handleLearnChanges = async (): Promise<void> => {
     try {
-      const response = await axiosInstance.post('/assistants/learn', {
+       await axiosInstance.post('/assistants/learn', {
         customerMessage: emailThread,
         originalResponse: previousReply,
         editedResponse: generatedReply,
