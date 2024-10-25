@@ -30,7 +30,7 @@ const EmailCampaigns: React.FC = () => {
   const handleGenerateHtml = async () => {
     const campaignInput = `Generate html with this generated Campaing Content ${generatedCampaign}}`;
     try {
-      const response = await axiosInstance.post('/assistants', { userId: 1, chatId: 1, userMessage: campaignInput });
+      const response = await axiosInstance.post('/assistants', { userId: 1, chatId: 2, userMessage: campaignInput });
      console.log(response.data)
       await  setGeneratedHtml(response.data);
 
@@ -46,7 +46,7 @@ const EmailCampaigns: React.FC = () => {
     debugger
     const campaignInput = `Email Type: ${emailType}, Product Profile: ${productProfile}, AI Template: ${aiTemplate}`;
     try {
-      const response = await axiosInstance.post('/assistants', { userId: 1, chatId: 1, userMessage: campaignInput });
+      const response = await axiosInstance.post('/assistants', { userId: 1, chatId: 2, userMessage: campaignInput });
       setGeneratedCampaign(response.data);
     } catch (error) {
       console.error('Error generating campaign:', error);
