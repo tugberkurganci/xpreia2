@@ -1,13 +1,14 @@
 import React, { useState, useRef, ChangeEvent, DragEvent } from 'react';
-import axiosInstance from './../utils/axiosInterceptors';
+import axiosInstance from '../utils/axiosInterceptors';
+import { useSelector } from 'react-redux';
 
-interface TrainingDataUploadProps {}
 
-const TrainingDataUpload: React.FC<TrainingDataUploadProps> = () => {
+const TrainingDataUpload: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
-  const [fileType, setFileType] = useState<any>('');
-  const [additionalInfo, setAdditionalInfo] = useState<any>('');
+  const [fileType, setFileType] = useState<string>('');
+  const [additionalInfo, setAdditionalInfo] = useState<string>('');
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const auth = useSelector((state:any) => state.auth);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,12 +37,12 @@ const TrainingDataUpload: React.FC<TrainingDataUploadProps> = () => {
   };
 
   const handleFiles = async (files: File[]): Promise<void> => {
-    const textFiles = files.filter(file => 
+    const textFiles = files.filter(file =>
       file.type === 'text/plain' || file.name.endsWith('.txt')
     );
 
     const newFiles: any[] = [];
-    
+
     for (const file of textFiles) {
       try {
         const text = await file.text();
@@ -51,7 +52,7 @@ const TrainingDataUpload: React.FC<TrainingDataUploadProps> = () => {
           content: text,
           size: file.size,
           uploadDate: new Date(),
-          type: fileType
+          type: fileType,
         });
       } catch (error) {
         console.error(`Error reading file ${file.name}:`, error);
@@ -68,6 +69,8 @@ const TrainingDataUpload: React.FC<TrainingDataUploadProps> = () => {
         formData.append('file', uploadedFiles[0].file);
         formData.append('fileType', fileType);
         formData.append('additionalInfo', additionalInfo);
+        formData.append('userId',auth.id); // Include userId
+        formData.append('isAdmin', auth.role); // Include isAdmin
       } else {
         alert('No files uploaded.');
         return;
@@ -75,6 +78,7 @@ const TrainingDataUpload: React.FC<TrainingDataUploadProps> = () => {
 
       const response = await axiosInstance.post('/assistants/upload', formData);
       alert('AI training initiated successfully: ' + response.data);
+    setUploadedFiles([])
     } catch (error: any) {
       console.error('Error training AI:', error);
       alert('Failed to initiate AI training: ' + (error.response?.data || error.message));
@@ -115,7 +119,7 @@ const TrainingDataUpload: React.FC<TrainingDataUploadProps> = () => {
         </div>
       </div>
 
-      <div className="mb-4">
+   {  auth.role==="USER" && <div className="mb-4">
         <label className="block mb-2">Select File Type:</label>
         <select 
           value={fileType} 
@@ -129,7 +133,7 @@ const TrainingDataUpload: React.FC<TrainingDataUploadProps> = () => {
           <option value="customerAvatar">Customer Avatar</option>
           <option value="otherInfo">Any Other Info</option>
         </select>
-      </div>
+      </div>}
 
       <div className="mb-4">
         <label className="block mb-2">Additional Information:</label>

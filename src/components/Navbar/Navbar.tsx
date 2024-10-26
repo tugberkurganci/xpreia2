@@ -53,7 +53,7 @@ const Navbar = () => {
             </Link>
           </li>
 
-          {//authState.role === "ADMIN" && 
+          {authState.role === "ADMIN" && 
           (
             <li className="nav-item">
               <Link

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import axiosInstance from './../utils/axiosInterceptors';
 import { Card, CardHeader, Button } from 'react-bootstrap';
 import { FiRefreshCw } from 'react-icons/fi';
 import { BiDownload } from 'react-icons/bi';
+import { FaStar } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const EmailCampaigns: React.FC = () => {
   const [emailType, setEmailType] = useState<string>('');
@@ -10,6 +12,12 @@ const EmailCampaigns: React.FC = () => {
   const [aiTemplate, setAiTemplate] = useState<string>('');
   const [generatedCampaign, setGeneratedCampaign] = useState<string>('');
   const [generatedHtml, setGeneratedHtml] = useState<string>('');
+  const [previousReply, setPreviousReply] = useState<string>(''); // İlk yanıt
+  const [commentInput, setCommentInput] = useState<string>('');
+  const [rating, setRating] = useState<number>(0);
+  const [hoverRating, setHoverRating] = useState<number | null>(null); // Hover efekti
+  const auth = useSelector((state: any) => state.auth);
+
   const emailTypes = [
     { id: 1, name: 'Product' },
     { id: 2, name: 'Informational/News' },
@@ -28,48 +36,100 @@ const EmailCampaigns: React.FC = () => {
   ];
 
   const handleGenerateHtml = async () => {
-    const campaignInput = `Generate html with this generated Campaing Content ${generatedCampaign}}`;
+    const campaignInput = `Generate html with this generated Campaign Content: ${generatedCampaign}`;
     try {
-      const response = await axiosInstance.post('/assistants', { userId: 1, chatId: 2, userMessage: campaignInput });
-     console.log(response.data)
-      await  setGeneratedHtml(response.data);
-
-      handleDownloadHtml();
+      const response = await axiosInstance.post('/assistants', {
+        userId: auth.id,
+        chatId: auth.id,
+        userMessage: campaignInput
+      });
+      const htmlData = response.data;
+      setGeneratedHtml(htmlData!=null?htmlData:generatedHtml);
+      handleDownloadHtml(htmlData); // HtmlData ile direkt indir
     } catch (error) {
-      console.error('Error generating campaign:', error);
-      alert('Failed to generate campaign.');
+      console.error('Error generating HTML:', error);
+      alert('Failed to generate HTML.');
     }
   };
 
-  
   const handleGenerateCampaign = async () => {
-    debugger
     const campaignInput = `Email Type: ${emailType}, Product Profile: ${productProfile}, AI Template: ${aiTemplate}`;
     try {
-      const response = await axiosInstance.post('/assistants', { userId: 1, chatId: 2, userMessage: campaignInput });
-      setGeneratedCampaign(response.data);
+      const response = await axiosInstance.post('/assistants', {
+        userId: auth.id,
+        chatId: auth.id,
+        userMessage: campaignInput
+      });
+      const campaignData = response.data;
+      setGeneratedCampaign(campaignData);
+      setPreviousReply(campaignData); // İlk yanıtı kaydet
     } catch (error) {
       console.error('Error generating campaign:', error);
       alert('Failed to generate campaign.');
     }
   };
 
-  const handleDownloadHtml = () => {
-    // HTML içeriğini oluşturuyoruz
- 
-    
-    // HTML içeriğini bir dosya olarak indirmek için Blob ve URL.createObjectURL kullanıyoruz
-    const blob = new Blob([generatedHtml], { type: 'text/html' });
+  const handleLearnChanges = async () => {
+    if (!previousReply) {
+      alert('No previous reply to learn from.');
+      return;
+    }
+
+    try {
+      const campaignInput = `Email Type: ${emailType}, Product Profile: ${productProfile}, AI Template: ${aiTemplate}`;
+
+      await axiosInstance.post('/assistants/learn', {
+        customerMessage: campaignInput,
+        originalResponse: previousReply,
+        editedResponse: generatedCampaign,
+        rating,
+        userId: auth.id
+      });
+      alert('AI has learned from your changes.');
+      setPreviousReply('');
+      setGeneratedCampaign('');
+      setRating(0); // Gönderim sonrası sıfırla
+    } catch (error) {
+      console.error('Error learning changes:', error);
+      alert('Failed to learn changes.');
+    }
+  };
+
+  const handleGenerateComment = async () => {
+    try {
+      const response = await axiosInstance.post('/assistants', {
+        userId: auth.id,
+        chatId: auth.id,
+        userMessage: "This is a user comment for the campaign: " + commentInput +"change this:" +generatedCampaign});
+      setGeneratedCampaign(response.data); 
+      alert('Comment processed and reply regenerated.');
+    } catch (error) {
+      console.error('Error regenerating reply:', error);
+      alert('Failed to regenerate reply.');
+    }
+  };
+
+  const handleDownloadHtml = (responseData: string) => {
+    const blob = new Blob([responseData], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
-    
-    // Kullanıcıya dosyayı indirmesi için bir bağlantı oluşturuyoruz
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'email_campaign.html'; // İndirilirken kullanılacak dosya adı
+    a.download = 'email_campaign.html';
     document.body.appendChild(a);
-    a.click(); // Bağlantıya tıklıyoruz
-    document.body.removeChild(a); // Bağlantıyı kaldırıyoruz
-    URL.revokeObjectURL(url); // Oluşturulan URL'yi serbest bırakıyoruz
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleTextAreaChange = (
+    e: ChangeEvent<HTMLTextAreaElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ): void => {
+    setter(e.target.value);
+  };
+
+  const handleRatingClick = (starIndex: number) => {
+    setRating(starIndex + 1);
   };
 
   return (
@@ -134,6 +194,53 @@ const EmailCampaigns: React.FC = () => {
               <BiDownload className="w-4 h-4 mr-2" />
               Download as HTML
             </Button>
+          </div>
+
+          {/* Learn My Changes and Rating Section */}
+          <div className="generated-reply mt-4">
+            <h3 className="text-lg font-semibold mb-2">Adjust Reply and Learn</h3>
+            <textarea
+              placeholder="Adjust the reply here..."
+              value={generatedCampaign}
+              onChange={(e) => setGeneratedCampaign(e.target.value)}
+              className="textarea mb-4"
+            />
+
+            {/* Rating Section */}
+            <div className="flex items-center mt-4">
+              <h4 className="mr-2">Rate the Response:</h4>
+              <div className="rating flex">
+                {Array.from({ length: 10 }, (_, index) => (
+                  <FaStar
+                    key={index}
+                    onClick={() => handleRatingClick(index)}
+                    onMouseEnter={() => setHoverRating(index + 1)}
+                    onMouseLeave={() => setHoverRating(null)}
+                    style={{
+                      cursor: 'pointer',
+                      color: index < (hoverRating || rating) ? '#FFD700' : '#D3D3D3',
+                      transition: 'color 0.2s',
+                    }}
+                    size={24}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <Button onClick={handleLearnChanges} className="primary mb-4">
+              Learn My Changes
+            </Button>
+          </div>
+
+          <div className="comment-input mt-4">
+            <h3 className="text-lg font-semibold mb-2">Add a Comment:</h3>
+            <textarea
+              placeholder="Comment about the response..."
+              value={commentInput}
+              onChange={(e) => handleTextAreaChange(e, setCommentInput)}
+              className="textarea mb-4"
+            />
+            <Button onClick={handleGenerateComment}>Regenerate Response Based on Comment</Button>
           </div>
         </div>
       </div>
