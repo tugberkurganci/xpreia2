@@ -14,12 +14,14 @@ import react from "@vitejs/plugin-react-swc";
 */
 
 
+
 export default defineConfig({
   plugins: [react()],
   base: "/xpreia2/",
   server: {
     proxy: {
     "/api": "https://xperia-dsbo.onrender.com/"
-    },
-  },
+   
+    
+  },}}
 );
