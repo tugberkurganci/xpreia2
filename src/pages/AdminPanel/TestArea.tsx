@@ -11,11 +11,7 @@ interface TextAreaProps {
   className?: string;
 }
 
-interface InputProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder: string;
-}
+
 
 interface TabButtonProps {
   isActive: boolean;
