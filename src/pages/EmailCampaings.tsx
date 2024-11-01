@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import axiosInstance from './../utils/axiosInterceptors';
 import { Card, CardHeader, Button } from 'react-bootstrap';
 import { FiRefreshCw } from 'react-icons/fi';
@@ -17,13 +17,9 @@ const EmailCampaigns: React.FC = () => {
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number | null>(null); // Hover efekti
   const auth = useSelector((state: any) => state.auth);
+  const [emailTypes, setEmailTypes] = useState<{ id: number; name: string }[]>([]); // Updated state
 
-  const emailTypes = [
-    { id: 1, name: 'Product' },
-    { id: 2, name: 'Informational/News' },
-    { id: 3, name: 'Community' },
-    { id: 4, name: 'Sales' }
-  ];
+ 
 
   const productProfiles = [
     { id: 1, name: 'Tech Product' },
@@ -51,7 +47,27 @@ const EmailCampaigns: React.FC = () => {
       alert('Failed to generate HTML.');
     }
   };
+  useEffect(() => {
+    fetchEmailTypes();
+  }, []);
 
+  const fetchEmailTypes = async () => {
+    try {
+      const response = await axiosInstance.get('/email-types');
+      // Ensure response data is an array
+
+      console.log(response.data)
+      if (Array.isArray(response.data)) {-
+        setEmailTypes(response.data);
+      } else {
+        console.error('Expected response data to be an array:', response.data);
+        setEmailTypes([]); // Default to empty array if not an array
+      }
+    } catch (error) {
+      console.error('Error fetching email types:', error);
+      setEmailTypes([]); // Default to empty array on error
+    }
+  };
   const handleGenerateCampaign = async () => {
     const campaignInput = `Email Type: ${emailType}, Product Profile: ${productProfile}, AI Template: ${aiTemplate}`;
     try {

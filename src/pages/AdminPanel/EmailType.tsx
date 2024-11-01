@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Table, Button, Modal, Form } from 'react-bootstrap';
 import { Plus, Edit, Trash2 } from 'lucide-react';
+import axiosInstance from '../../utils/axiosInterceptors';
 
 type EmailType = {
   id: number;
@@ -9,16 +10,60 @@ type EmailType = {
 };
 
 const EmailTypesTab: React.FC = () => {
-  const [emailTypes, setEmailTypes] = useState<EmailType[]>([
-    { id: 1, name: 'Product', description: 'Product announcements and updates' },
-    { id: 2, name: 'Informational/News', description: 'Company news and updates' },
-    { id: 3, name: 'Community', description: 'Community engagement emails' },
-    { id: 4, name: 'Sales', description: 'Promotional and sales campaigns' }
-  ]);
+  const [emailTypes, setEmailTypes] = useState<EmailType[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [currentEmailType, setCurrentEmailType] = useState<EmailType | null>(null);
+
+  useEffect(() => {
+    fetchEmailTypes();
+  }, []);
+
+  const fetchEmailTypes = async () => {
+    try {
+      const response = await axiosInstance.get('/email-types');
+      // Ensure response data is an array
+      if (Array.isArray(response.data)) {-
+        setEmailTypes(response.data);
+      } else {
+        console.error('Expected response data to be an array:', response.data);
+        setEmailTypes([]); // Default to empty array if not an array
+      }
+    } catch (error) {
+      console.error('Error fetching email types:', error);
+      setEmailTypes([]); // Default to empty array on error
+    }
+  };
+
+  const handleSave = async () => {
+    console.log(currentEmailType)
+    if (currentEmailType && currentEmailType?.id !=0) {
+      await axiosInstance.put(`/email-types/${currentEmailType.id}`,currentEmailType);
+    } else {
+     
+      await axiosInstance.post('/email-types', currentEmailType);
+    }
+    setShowModal(false);
+    fetchEmailTypes();
+  };
+
+  const handleEdit = (emailType: EmailType) => {
+    setCurrentEmailType(emailType);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    await axiosInstance.delete(`/email-types/${id}`);
+    fetchEmailTypes();
+  };
+
+  const handleCloseModal = () => {
+    setCurrentEmailType(null);
+    setShowModal(false);
+  };
 
   return (
     <div className="section">
-      <Button className="action-button" onClick={() => alert('Add Email Type')}>
+      <Button className="action-button" onClick={() => handleEdit({ id: 0, name: '', description: '' })}>
         <Plus className="button-icon" /> Add Email Type
       </Button>
       <Table striped bordered hover>
@@ -31,16 +76,16 @@ const EmailTypesTab: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {emailTypes.map((emailType) => (
+          {emailTypes.length > 0 && emailTypes.map((emailType) => (
             <tr key={emailType.id}>
               <td>{emailType.id}</td>
               <td>{emailType.name}</td>
               <td>{emailType.description}</td>
               <td>
-                <Button variant="primary" onClick={() => alert(`Edit ${emailType.id}`)}>
+                <Button variant="primary" onClick={() => handleEdit(emailType)}>
                   <Edit />
                 </Button>
-                <Button variant="danger" onClick={() => setEmailTypes(emailTypes.filter((e) => e.id !== emailType.id))}>
+                <Button variant="danger" onClick={() => handleDelete(emailType.id)}>
                   <Trash2 />
                 </Button>
               </td>
@@ -48,6 +93,52 @@ const EmailTypesTab: React.FC = () => {
           ))}
         </tbody>
       </Table>
+
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>{currentEmailType ? 'Edit Email Type' : 'Add Email Type'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={currentEmailType?.name || ''}
+                onChange={(e) => 
+                  setCurrentEmailType((prev) => ({
+                    ...(prev || { id: 0, name: '', description: '' }), // Use a default if prev is null
+                    name: e.target.value
+                
+                  
+                  }))
+                }
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                value={currentEmailType?.description || ''}
+                onChange={(e) => 
+                  setCurrentEmailType((prev) => ({
+                    ...(prev || { id: 0, name: '', description: '' }),
+                    description: e.target.value,
+                  }))
+                }
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSave}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
