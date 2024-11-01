@@ -7,26 +7,34 @@ const CustomerService: React.FC = () => {
   const [emailThread, setEmailThread] = useState<string>('');
   const [generatedReply, setGeneratedReply] = useState<string>('');
   const [previousReply, setPreviousReply] = useState<string>('');
-  const [commentInput, setCommentInput] = useState<string>(''); // Yorum input state'i
+  const [commentInput, setCommentInput] = useState<string>(''); 
   const auth = useSelector((state:any) => state.auth);
   const [rating, setRating] = useState<number>(0);
-  const [hoverRating, setHoverRating] = useState<number | null>(null); // Hover efekti
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); // Loading state
 
   const handleGenerateReply = async (): Promise<void> => {
+    setLoading(true); // Start loading
     try {
-      const response = await axiosInstance.post('/assistants', { userId: auth.id, chatId: auth.id, userMessage: emailThread+" .sadece email örneği atmalısın" });
+      const response = await axiosInstance.post('/assistants', { 
+        userId: auth.id, 
+        chatId: auth.id, 
+        userMessage: emailThread + " .sadece email örneği atmalısın" 
+      });
       setGeneratedReply(response.data);
       setPreviousReply(response.data);
-      console.log(response.data)
+      console.log(response.data);
     } catch (error) {
       console.error('Error generating reply:', error);
       alert('Failed to generate reply.');
     }
+    setLoading(false); // Stop loading
   };
 
   const handleLearnChanges = async (): Promise<void> => {
+    setLoading(true); // Start loading
     try {
-       await axiosInstance.post('/assistants/learn', {
+      await axiosInstance.post('/assistants/learn', {
         customerMessage: emailThread,
         originalResponse: previousReply,
         editedResponse: generatedReply,
@@ -40,17 +48,24 @@ const CustomerService: React.FC = () => {
       console.error('Error learning changes:', error);
       alert('Failed to learn changes.');
     }
+    setLoading(false); // Stop loading
   };
 
   const handleGenerateComment = async (): Promise<void> => {
+    setLoading(true); // Start loading
     try {
-      const response = await axiosInstance.post('/assistants', { userId: auth.id, chatId: auth.id, userMessage: "bu bir kullanıcı yorumu geçmiş mesajların üstüne :" + commentInput });
-      setGeneratedReply(response.data); // Cevap tekrar oluşturuluyor
+      const response = await axiosInstance.post('/assistants', { 
+        userId: auth.id, 
+        chatId: auth.id, 
+        userMessage: "bu bir kullanıcı yorumu geçmiş mesajların üstüne :" + commentInput 
+      });
+      setGeneratedReply(response.data); 
       alert('Reply regenerated successfully.');
     } catch (error) {
       console.error('Error regenerating reply:', error);
       alert('Failed to regenerate reply.');
     }
+    setLoading(false); // Stop loading
   };
 
   const handleTextAreaChange = (
@@ -73,8 +88,8 @@ const CustomerService: React.FC = () => {
         onChange={(e) => handleTextAreaChange(e, setEmailThread)}
         className="textarea"
       />
-      <button onClick={handleGenerateReply} className="primary mt-4">
-        Generate Reply
+      <button onClick={handleGenerateReply} className="primary mt-4" disabled={loading}>
+        {loading ? 'Generating...' : 'Generate Reply'}
       </button>
 
       <div className="generated-reply mt-4">
@@ -85,27 +100,27 @@ const CustomerService: React.FC = () => {
           onChange={(e) => setGeneratedReply(e.target.value)}
           className="textarea mb-4"
         />
-                    <div className="flex items-center mt-4">
-              <h4 className="mr-2">Rate the Response:</h4>
-              <div className="rating flex">
-                {Array.from({ length: 10 }, (_, index) => (
-                  <FaStar
-                    key={index}
-                    onClick={() => handleRatingClick(index)}
-                    onMouseEnter={() => setHoverRating(index + 1)}
-                    onMouseLeave={() => setHoverRating(null)}
-                    style={{
-                      cursor: 'pointer',
-                      color: index < (hoverRating || rating) ? '#FFD700' : '#D3D3D3',
-                      transition: 'color 0.2s',
-                    }}
-                    size={24}
-                  />
-                ))}
-              </div>
-            </div>
-        <button onClick={handleLearnChanges} className="primary mb-4">
-          Adjustment Reply and Learn My Changes
+        <div className="flex items-center mt-4">
+          <h4 className="mr-2">Rate the Response:</h4>
+          <div className="rating flex">
+            {Array.from({ length: 10 }, (_, index) => (
+              <FaStar
+                key={index}
+                onClick={() => handleRatingClick(index)}
+                onMouseEnter={() => setHoverRating(index + 1)}
+                onMouseLeave={() => setHoverRating(null)}
+                style={{
+                  cursor: 'pointer',
+                  color: index < (hoverRating || rating) ? '#FFD700' : '#D3D3D3',
+                  transition: 'color 0.2s',
+                }}
+                size={24}
+              />
+            ))}
+          </div>
+        </div>
+        <button onClick={handleLearnChanges} className="primary mb-4" disabled={loading}>
+          {loading ? 'Submitting Changes...' : 'Adjust and Learn My Changes'}
         </button>
 
         <div className="comment-input mt-4">
@@ -118,8 +133,8 @@ const CustomerService: React.FC = () => {
           />
         </div>
 
-        <button onClick={handleGenerateComment} className="primary">
-          Regenerate Reply
+        <button onClick={handleGenerateComment} className="primary" disabled={loading}>
+          {loading ? 'Regenerating...' : 'Regenerate Reply'}
         </button>
       </div>
     </div>
