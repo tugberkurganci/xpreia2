@@ -131,16 +131,7 @@ const TestArea: React.FC = () => {
     />
   );
 
-  const Input: React.FC<InputProps> = ({ value, onChange, placeholder }) => (
-    <input
-      type="text"
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      maxLength={2000}
-    />
-  );
+
 
   const TabButton: React.FC<TabButtonProps> = ({ isActive, onClick, children }) => (
     <button
