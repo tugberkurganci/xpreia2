@@ -12,7 +12,7 @@ export interface Guide {
 const CustomerServiceGuide: React.FC = () => {
   const [guides, setGuides] = useState<Guide[]>([]);
   const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
   const authState = useSelector((state: any) => state.auth);
   const userId = authState.id;
 
@@ -20,15 +20,18 @@ const CustomerServiceGuide: React.FC = () => {
     const fetchGuides = async () => {
       try {
         const response = await axiosInstance.get(`guides/user/${userId}/customerService`);
-        setGuides(response.data);
-        // Set the initial content for the first guide if available
         if (response.data.length > 0) {
-          setContent(response.data[0].content);
+          setGuides(response.data);
+          setContent(response.data[0].content); // Set initial content from the first guide
+        } else {
+          // Initialize a new guide if none are found
+          const newGuide: Guide = { id: 0, guideType: 'customerService', content: '', userId };
+          setGuides([newGuide]);
         }
       } catch (error) {
         console.error("Failed to fetch guides", error);
       } finally {
-        setLoading(false); // End loading state after data is fetched
+        setLoading(false);
       }
     };
     fetchGuides();
@@ -37,10 +40,22 @@ const CustomerServiceGuide: React.FC = () => {
   const handleUpdate = async () => {
     if (guides.length > 0) {
       const firstGuide = guides[0];
-      const updatedGuide = { ...firstGuide, content };
-      const response = await axiosInstance.post(`/guides/${firstGuide.id}`, updatedGuide);
-      // Update the guides list with the new content
-      setGuides(guides.map(guide => (guide.id === response.data.id ? response.data : guide)));
+
+      try {
+        let response;
+        if (firstGuide.id === 0) {
+          // Create new guide if it doesn't exist on the backend
+          response = await axiosInstance.post(`/guides`, { ...firstGuide, content });
+        } else {
+          // Update existing guide
+          response = await axiosInstance.post(`/guides/${firstGuide.id}`, { ...firstGuide, content });
+        }
+        
+        // Update the guides list with the new or updated guide
+        setGuides(guides.map(guide => (guide.id === response.data.id ? response.data : guide)));
+      } catch (error) {
+        console.error("Failed to update guide", error);
+      }
     }
   };
 
@@ -48,7 +63,7 @@ const CustomerServiceGuide: React.FC = () => {
     <div>
       <h3>Customer Service Guides</h3>
       {loading ? (
-        <p>Loading...</p> // Loading indicator
+        <p>Loading...</p>
       ) : (
         <ul>
           {guides.map((guide, index) => (
@@ -58,7 +73,6 @@ const CustomerServiceGuide: React.FC = () => {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Description"
-                  
                 />
               ) : (
                 <p>{guide.content}</p>
