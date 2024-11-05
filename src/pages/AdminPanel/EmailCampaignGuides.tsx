@@ -50,19 +50,27 @@ const EmailCampaignGuides: React.FC = () => {
       {loading ? (
         <p>Loading...</p> // Loading indicator
       ) : (
-         
-          <div>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Edit content for the first guide"
-              required
-            />
-            <button onClick={handleUpdate}>Save Changes</button>
-          </div>
-        
+        <ul>
+          {guides.map((guide, index) => (
+            <li key={guide.id}>
+              {index === 0 ? (
+                <textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Description"
+                  
+                />
+              ) : (
+                <p>{guide.content}</p>
+              )}
+            </li>
+          ))}
+        </ul>
       )}
+            <button onClick={handleUpdate} disabled={loading}>Save Changes</button>
+
     </div>
+
   );
 };
 
