@@ -38,6 +38,7 @@ const EmailCampaignGuides: React.FC = () => {
   }, [userId]);
 
   const handleUpdate = async () => {
+    setLoading(true)
     if (guides.length > 0) {
       const firstGuide = guides[0];
 
@@ -57,6 +58,7 @@ const EmailCampaignGuides: React.FC = () => {
         console.error("Failed to update guide", error);
       }
     }
+    setLoading(false)
   };
 
   return (
