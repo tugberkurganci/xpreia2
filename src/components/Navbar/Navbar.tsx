@@ -53,9 +53,7 @@ const Navbar = () => {
             </Link>
           </li>
 
-          
-          
-            <li className="nav-item">
+          {authState.id>0 && <li className="nav-item">
               <Link
                 className={`nav-link ${
                   activeKey === "admin" &&
@@ -64,9 +62,11 @@ const Navbar = () => {
                 to="/dashboard"
                 onClick={() => handleNavClick("admin")}
               >
-                Admin
+                Dashboard
               </Link>
-            </li>
+            </li>}
+          
+           
           
         </ul>
 
