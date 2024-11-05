@@ -68,19 +68,13 @@ const EmailCampaignGuides: React.FC = () => {
         <p>Loading...</p>
       ) : (
         <ul>
-          {guides.map((guide, index) => (
-            <li key={guide.id}>
-              {index === 0 ? (
+        
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Description"
                 />
-              ) : (
-                <p>{guide.content}</p>
-              )}
-            </li>
-          ))}
+          
         </ul>
       )}
       <button onClick={handleUpdate} disabled={loading}>Save Changes</button>
