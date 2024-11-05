@@ -16,12 +16,14 @@ const EmailTypesTab: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentEmailType, setCurrentEmailType] = useState<EmailType | null>(null);
   const authState = useSelector((state: any) => state.auth);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     fetchEmailTypes();
   }, []);
 
   const fetchEmailTypes = async () => {
+    setIsLoading(true)
     try {
       const response = await axiosInstance.get(`/guides/user/${authState.id}/aiTypes`);
       // Ensure response data is an array
@@ -35,9 +37,11 @@ const EmailTypesTab: React.FC = () => {
       console.error('Error fetching ai types:', error);
       setEmailTypes([]); // Default to empty array on error
     }
+    setIsLoading(false)
   };
 
   const handleSave = async () => {
+    setIsLoading(true)
     console.log(currentEmailType)
     if (currentEmailType && currentEmailType?.id !=0) {
       await axiosInstance.post(`/guides/${currentEmailType.id}`,{...currentEmailType,  guideType:"aiTypes",userId:authState.id});
@@ -47,6 +51,7 @@ const EmailTypesTab: React.FC = () => {
     }
     setShowModal(false);
     fetchEmailTypes();
+    setIsLoading(false)
   };
 
   const handleEdit = (emailType: EmailType) => {
@@ -67,7 +72,7 @@ const EmailTypesTab: React.FC = () => {
   return (
     <div className="section">
       <Button className="action-button" onClick={() => handleEdit({ id: 0, name: '', content: '' })}>
-        <Plus className="button-icon" /> Add Ai Template Type
+        <Plus className="button-icon" /> {isLoading?"Loading":"Add Ai Template Type"}
       </Button>
       <Table striped bordered hover>
         <thead>

@@ -5,6 +5,7 @@ import { BiDownload } from 'react-icons/bi';
 import { FaStar } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import parse from 'html-react-parser';
+import { TbRuler } from 'react-icons/tb';
 
 
 const EmailCampaigns: React.FC = () => {
@@ -21,7 +22,7 @@ const EmailCampaigns: React.FC = () => {
   const [emailTypes, setEmailTypes] = useState<{ id: number; name: string; description: string }[]>([]); // Updated state
   const [aiTemplates, setAiTemplates] = useState<{ id: number; name: string; content: string }[]>([]);
   const [productProfiles, setProductProfiles] = useState<{ id: number; name: string;content:string; vectorStoreId: string }[]>([]);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
   const handleGenerateHtml = async (campaignData: string) => {
@@ -42,6 +43,8 @@ const EmailCampaigns: React.FC = () => {
 
 
   const fetchEmailTypes = async () => {
+
+    setIsLoading(true);
     try {
       const response = await axiosInstance.get(`/email-types/${auth.id}`);
       // Ensure response data is an array
@@ -54,16 +57,22 @@ const EmailCampaigns: React.FC = () => {
         console.error('Expected response data to be an array:', response.data);
         setEmailTypes([]); // Default to empty array if not an array
       }
+
+    setIsLoading(false);
+
     } catch (error) {
       console.error('Error fetching email types:', error);
       setEmailTypes([]); // Default to empty array on error
     }
+
+    setIsLoading(false);
   };
 
 
 
   const fetchAiTemplates = async () => {
     try {
+      
       const response = await axiosInstance.get(`/guides/user/${auth.id}/aiTypes`);
       // Ensure response data is an array
 
@@ -81,6 +90,7 @@ const EmailCampaigns: React.FC = () => {
     }
   };
   const handleGenerateCampaign = async () => {
+    setIsLoading(true);
 
     const campaignInput = `Generate Email Campaing  and generate Html  with theese informations :Email Type:  ${emailType?.name} content : ${emailType?.description},
     only select this Product Profile : ${productProfile?.name}  content : ${productProfile?.content}  dont add another.  
@@ -102,21 +112,29 @@ const EmailCampaigns: React.FC = () => {
       setGeneratedCampaign(campaignData);
       setPreviousReply(campaignData); // İlk yanıtı kaydet
       handleGenerateHtml(campaignData)
+      setIsLoading(false);
+
     } catch (error) {
       console.error('Error generating campaign:', error);
       alert('Failed to generate campaign.');
+      setIsLoading(false);
+
     }
   };
 
   const handleLearnChanges = async () => {
+    setIsLoading(true);
+
     if (!previousReply) {
       alert('No previous reply to learn from.');
       return;
     }
 
     try {
-      const campaignInput = `Generate Email Campaing  and Html Format with theese informations :Email Type: ${emailType?.name} content : ${emailType?.description},only select this Product Profile : ${productProfile?.name}  dont add another, AI Template: ${aiTemplate?.name}`
-      await axiosInstance.post('/assistants/learn', {
+      const campaignInput = `Generate Email Campaing  and generate Html  with theese informations :Email Type:  ${emailType?.name} content : ${emailType?.description},
+      only select this Product Profile : ${productProfile?.name}  content : ${productProfile?.content}  dont add another.  
+       ONLY  SELECT :"${aiTemplate?.content}" AND GENERATE, html kodunu oluştur bu bilgilerle`;
+        await axiosInstance.post('/assistants/learn', {
         customerMessage: campaignInput,
         originalResponse: generatedCampaign,
         editedResponse: previousReply,
@@ -127,13 +145,19 @@ const EmailCampaigns: React.FC = () => {
       setPreviousReply('');
       setGeneratedCampaign("");
       setRating(0); // Gönderim sonrası sıfırla
+      setIsLoading(false);
+
     } catch (error) {
       console.error('Error learning changes:', error);
       alert('Failed to learn changes.');
+      setIsLoading(false);
+
     }
   };
 
   const handleGenerateComment = async () => {
+    setIsLoading(true);
+
     try {
       const response = await axiosInstance.post('/assistants', {
         userId: auth.id,
@@ -147,14 +171,20 @@ const EmailCampaigns: React.FC = () => {
           handleGenerateHtml(result)
 
       alert('Comment processed and reply regenerated.');
+      setIsLoading(false);
+
     } catch (error) {
       console.error('Error regenerating reply:', error);
       alert('Failed to regenerate reply.');
+      setIsLoading(false);
+
     }
   };
 
 
   const handleDownloadHtml = () => {
+    setIsLoading(true);
+
     const blob = new Blob([generatedHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -163,7 +193,9 @@ const EmailCampaigns: React.FC = () => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);      
+    setIsLoading(false);
+
   };
 
   const handleTextAreaChange = (
@@ -253,7 +285,7 @@ const EmailCampaigns: React.FC = () => {
             </select>
           </div>
 
-          <Button className="w-full" onClick={handleGenerateCampaign}>Generate Campaign</Button>
+          <Button className="w-full" onClick={handleGenerateCampaign}>{isLoading?"Generating ":"Generate Campaign"}</Button>
 
           <div className="border rounded p-4 min-h-32 bg-gray-50 mt-4">
             <p className="text-gray-400">{'Generated content will appear here...'}</p>
@@ -282,11 +314,11 @@ const EmailCampaigns: React.FC = () => {
               {/* Buttons Section */}
               <div className="grid grid-cols-2 gap-4">
                 <Button className="flex items-center justify-center space-x-1 px-4 py-2 bg-blue-500 text-white rounded-md w-full" onClick={handleGenerateComment}>
-                  Regenerate Response Based on Comment
+                  {isLoading?"Loading":"Regenerate Response Based on Comment"}
                 </Button>
                 <Button className="flex items-center justify-center space-x-1 px-4 py-2 bg-green-500 text-white rounded-md w-full" onClick={handleDownloadHtml}>
                   <BiDownload className="w-4 h-4" />
-                  <span>Download as HTML</span>
+                  <span>{isLoading?"Loading":"Download as HTML"}</span>
                 </Button>
               </div>
             </div>
@@ -323,7 +355,7 @@ const EmailCampaigns: React.FC = () => {
             </div>
 
             <Button onClick={handleLearnChanges} className="primary mb-4">
-              Learn My Changes
+             {isLoading?"Loading":"Learn My Changes" }
             </Button>
           </div>
 

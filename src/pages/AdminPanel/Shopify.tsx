@@ -18,9 +18,12 @@ const Shopify: React.FC = () => {
     userId: 0, // Initialize with userId from Redux
   });
   const [message, setMessage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Update Shopify information
   const updateShopifyInfo = async () => {
+    setIsLoading(true)
+
     console.log(shopifyData)
     try {
       const response = await axiosInstance.put('/users/shopify', {...shopifyData,userId:authState.id});
@@ -29,10 +32,13 @@ const Shopify: React.FC = () => {
       console.error('Error updating Shopify info:', error);
       setMessage('Failed to update Shopify info');
     }
+    setIsLoading(false)
+
   };
 
   // Get Shopify information
   const fetchShopifyInfo = async () => {
+    setIsLoading(true)
     try {
       const response = await axiosInstance.put('/users/shopify/get', {...shopifyData,userId:authState.id});
       setShopifyData(response.data); // Update form with received data
@@ -40,6 +46,8 @@ const Shopify: React.FC = () => {
       console.error('Error fetching Shopify info:', error);
       setMessage('Failed to fetch Shopify info');
     }
+    setIsLoading(false)
+
   };
 
   // Handle input change
@@ -79,8 +87,8 @@ const Shopify: React.FC = () => {
         />
       </div>
   
-      <button onClick={updateShopifyInfo}>Update Shopify Info</button>
-      <button onClick={fetchShopifyInfo}>Fetch Shopify Info</button>
+      <button onClick={updateShopifyInfo}>{isLoading?"Loading":"Update Shopify Info"}</button>
+      <button onClick={fetchShopifyInfo}>{isLoading?"Loading":"Fetch Shopify Info"}</button>
       {message && <p>{message}</p>}
     </div>
   );
