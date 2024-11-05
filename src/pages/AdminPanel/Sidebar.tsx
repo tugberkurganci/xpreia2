@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import { LayoutGrid, Mail, Users, Settings } from 'lucide-react';
+import { LayoutGrid, Mail, Settings } from 'lucide-react';
 
 type SidebarProps = {
   selectedSection: string;
