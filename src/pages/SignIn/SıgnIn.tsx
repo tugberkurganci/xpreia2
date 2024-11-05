@@ -44,7 +44,7 @@ const SignIn = () => {
 
       dispatch(loginSuccess(response.data.user));
 
-      setToken(response.data.token.refreshToken);
+      setToken(response.data.token.token);
 
       navigate("/");
     } catch (error: any) {
