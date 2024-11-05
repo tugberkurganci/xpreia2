@@ -1,15 +1,16 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import axiosInstance from './../utils/axiosInterceptors';
 import { Card, CardHeader, Button } from 'react-bootstrap';
-import { FiRefreshCw } from 'react-icons/fi';
 import { BiDownload } from 'react-icons/bi';
 import { FaStar } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
+import parse from 'html-react-parser';
+
 
 const EmailCampaigns: React.FC = () => {
-  const [emailType, setEmailType] = useState<string>('');
-  const [productProfile, setProductProfile] = useState<string>('');
-  const [aiTemplate, setAiTemplate] = useState<string>('');
+  const [emailType, setEmailType] = useState<{ id: number; name: string; description: string }>();
+  const [productProfile, setProductProfile] = useState<{ id: number; name: string;content:string; vectorStoreId: string }>();
+  const [aiTemplate, setAiTemplate] = useState<{ id: number; name: string; content: string }>();
   const [generatedCampaign, setGeneratedCampaign] = useState<string>('');
   const [generatedHtml, setGeneratedHtml] = useState<string>('');
   const [previousReply, setPreviousReply] = useState<string>(''); // İlk yanıt
@@ -17,48 +18,38 @@ const EmailCampaigns: React.FC = () => {
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number | null>(null); // Hover efekti
   const auth = useSelector((state: any) => state.auth);
-  const [emailTypes, setEmailTypes] = useState<{ id: number; name: string }[]>([]); // Updated state
+  const [emailTypes, setEmailTypes] = useState<{ id: number; name: string; description: string }[]>([]); // Updated state
+  const [aiTemplates, setAiTemplates] = useState<{ id: number; name: string; content: string }[]>([]);
+  const [productProfiles, setProductProfiles] = useState<{ id: number; name: string;content:string; vectorStoreId: string }[]>([]);
 
- 
 
-  const productProfiles = [
-    { id: 1, name: 'Tech Product' },
-    { id: 2, name: 'Fashion Item' }
-  ];
 
-  const aiTemplates = [
-    { id: 1, name: 'Professional Announcement' },
-    { id: 2, name: 'Community Update' }
-  ];
+  const handleGenerateHtml = async (campaignData: string) => {
 
-  const handleGenerateHtml = async () => {
-    const campaignInput = `Generate html with this generated Campaign Content: ${generatedCampaign}`;
-    try {
-      const response = await axiosInstance.post('/assistants', {
-        userId: auth.id,
-        chatId: auth.id,
-        userMessage: campaignInput
-      });
-      const htmlData = response.data;
-      setGeneratedHtml(htmlData!=null?htmlData:generatedHtml);
-      handleDownloadHtml(htmlData); // HtmlData ile direkt indir
-    } catch (error) {
-      console.error('Error generating HTML:', error);
-      alert('Failed to generate HTML.');
-    }
+
+    setGeneratedHtml(campaignData)
+
   };
   useEffect(() => {
     fetchEmailTypes();
+    fetchAiTemplates();
+    fetchProductProfiles();
   }, []);
+  useEffect(() => {
+    console.log(generatedCampaign);
+
+  }, [generatedCampaign]);
+
 
   const fetchEmailTypes = async () => {
     try {
-      const response = await axiosInstance.get('/email-types');
+      const response = await axiosInstance.get(`/email-types/${auth.id}`);
       // Ensure response data is an array
 
       console.log(response.data)
-      if (Array.isArray(response.data)) {-
-        setEmailTypes(response.data);
+      if (Array.isArray(response.data)) {
+        -
+          setEmailTypes(response.data);
       } else {
         console.error('Expected response data to be an array:', response.data);
         setEmailTypes([]); // Default to empty array if not an array
@@ -68,8 +59,38 @@ const EmailCampaigns: React.FC = () => {
       setEmailTypes([]); // Default to empty array on error
     }
   };
+
+
+
+  const fetchAiTemplates = async () => {
+    try {
+      const response = await axiosInstance.get(`/guides/user/${auth.id}/aiTypes`);
+      // Ensure response data is an array
+
+      console.log(response.data)
+      if (Array.isArray(response.data)) {
+        -
+          setAiTemplates(response.data);
+      } else {
+        console.error('Expected response data to be an array:', response.data);
+        setAiTemplates([]); // Default to empty array if not an array
+      }
+    } catch (error) {
+      console.error('Error fetching email types:', error);
+      setAiTemplates([]); // Default to empty array on error
+    }
+  };
   const handleGenerateCampaign = async () => {
-    const campaignInput = `Email Type: ${emailType}, Product Profile: ${productProfile}, AI Template: ${aiTemplate}`;
+
+    const campaignInput = `Generate Email Campaing  and generate Html  with theese informations :Email Type:  ${emailType?.name} content : ${emailType?.description},
+    only select this Product Profile : ${productProfile?.name}  content : ${productProfile?.content}  dont add another.  
+     ONLY  SELECT :"${aiTemplate?.content}" AND GENERATE, html kodunu oluştur bu bilgilerle`;
+
+   /*  const campaignInput = `Generate Email Campaing  and generate Html  with theese informations :Email Type:  ${emailType?.name} content : ${emailType?.description},
+     only select this Product Profile : ${productProfile?.name}  content : ${productProfile?.description}  dont add another.  
+      ONLY  SELECT :"${aiTemplate?.name}" AND GENERATE, html kodunu oluştur bu bilgilerle`;
+*/
+    console.log(campaignInput)
     try {
       const response = await axiosInstance.post('/assistants', {
         userId: auth.id,
@@ -77,8 +98,10 @@ const EmailCampaigns: React.FC = () => {
         userMessage: campaignInput
       });
       const campaignData = response.data;
+
       setGeneratedCampaign(campaignData);
       setPreviousReply(campaignData); // İlk yanıtı kaydet
+      handleGenerateHtml(campaignData)
     } catch (error) {
       console.error('Error generating campaign:', error);
       alert('Failed to generate campaign.');
@@ -92,18 +115,17 @@ const EmailCampaigns: React.FC = () => {
     }
 
     try {
-      const campaignInput = `Email Type: ${emailType}, Product Profile: ${productProfile}, AI Template: ${aiTemplate}`;
-
+      const campaignInput = `Generate Email Campaing  and Html Format with theese informations :Email Type: ${emailType?.name} content : ${emailType?.description},only select this Product Profile : ${productProfile?.name}  dont add another, AI Template: ${aiTemplate?.name}`
       await axiosInstance.post('/assistants/learn', {
         customerMessage: campaignInput,
-        originalResponse: previousReply,
-        editedResponse: generatedCampaign,
+        originalResponse: generatedCampaign,
+        editedResponse: previousReply,
         rating,
         userId: auth.id
       });
       alert('AI has learned from your changes.');
       setPreviousReply('');
-      setGeneratedCampaign('');
+      setGeneratedCampaign("");
       setRating(0); // Gönderim sonrası sıfırla
     } catch (error) {
       console.error('Error learning changes:', error);
@@ -116,8 +138,14 @@ const EmailCampaigns: React.FC = () => {
       const response = await axiosInstance.post('/assistants', {
         userId: auth.id,
         chatId: auth.id,
-        userMessage: "This is a user comment for the campaign: " + commentInput +"change this:" +generatedCampaign});
-      setGeneratedCampaign(response.data); 
+        userMessage: "This is a user comment for the campaign: " + commentInput + ". Change this:" + generatedCampaign
+      });
+      const result = response.data
+      console.log(result)
+      setGeneratedCampaign(result);
+      setPreviousReply(result)
+          handleGenerateHtml(result)
+
       alert('Comment processed and reply regenerated.');
     } catch (error) {
       console.error('Error regenerating reply:', error);
@@ -125,8 +153,9 @@ const EmailCampaigns: React.FC = () => {
     }
   };
 
-  const handleDownloadHtml = (responseData: string) => {
-    const blob = new Blob([responseData], { type: 'text/html' });
+
+  const handleDownloadHtml = () => {
+    const blob = new Blob([generatedHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -148,6 +177,35 @@ const EmailCampaigns: React.FC = () => {
     setRating(starIndex + 1);
   };
 
+  const fetchProductProfiles = async () => {
+    try {
+      const response = await axiosInstance.get(`/documnts/filter`, {
+        params: {
+          userId: auth.id,
+          fileType: "productInfo"
+        }
+      });
+      setProductProfiles(response.data);
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+    }
+  };
+
+
+  const selectAiTemplate = async (name: string) => {
+    const selectedTemplate = aiTemplates.find((e) => e.name === name);
+    setAiTemplate(selectedTemplate || undefined);
+  };
+
+  const selectEmailType = async (name: string) => {
+    const selectedTemplate = emailTypes.find((e) => e.name === name);
+    setEmailType(selectedTemplate || undefined);
+  };
+
+  const selectProductProfile = async (name: string) => {
+    const selectedTemplate = productProfiles.find((e) => e.name === name);
+    setProductProfile(selectedTemplate || undefined);
+  };
   return (
     <Card>
       <CardHeader className="text-lg font-bold">Campaign Generator</CardHeader>
@@ -157,8 +215,8 @@ const EmailCampaigns: React.FC = () => {
             <label className="font-medium">1. Email Type</label>
             <select
               className="w-full p-2 border rounded"
-              value={emailType}
-              onChange={(e) => setEmailType(e.target.value)}
+              value={emailType?.name}
+              onChange={(e) => { selectEmailType(e.target.value) }}
             >
               <option value="">Choose campaign type</option>
               {emailTypes.map((type) => (
@@ -167,26 +225,26 @@ const EmailCampaigns: React.FC = () => {
             </select>
           </div>
 
-          <div className="space-y-2">
+          {emailType?.name === "Product" && <div className="space-y-2">
             <label className="font-medium">2. Choose Product Profile</label>
             <select
               className="w-full p-2 border rounded"
-              value={productProfile}
-              onChange={(e) => setProductProfile(e.target.value)}
+              value={productProfile?.name}
+              onChange={(e) => { selectProductProfile(e.target.value) }}
             >
               <option value="">Select product profile</option>
               {productProfiles.map((profile) => (
                 <option key={profile.id} value={profile.name}>{profile.name}</option>
               ))}
             </select>
-          </div>
+          </div>}
 
           <div className="space-y-2">
             <label className="font-medium">3. Choose AI Template</label>
             <select
               className="w-full p-2 border rounded"
-              value={aiTemplate}
-              onChange={(e) => setAiTemplate(e.target.value)}
+              value={aiTemplate?.name}
+              onChange={(e) => { selectAiTemplate(e.target.value) }}
             >
               <option value="">Select template</option>
               {aiTemplates.map((template) => (
@@ -198,27 +256,48 @@ const EmailCampaigns: React.FC = () => {
           <Button className="w-full" onClick={handleGenerateCampaign}>Generate Campaign</Button>
 
           <div className="border rounded p-4 min-h-32 bg-gray-50 mt-4">
-            <p className="text-gray-400">{generatedCampaign || 'Generated content will appear here...'}</p>
+            <p className="text-gray-400">{'Generated content will appear here...'}</p>
+            {/* HTML Preview */}
+            {generatedHtml && (
+              <div className="html-preview mt-4 p-2 border-t">
+                {parse(generatedHtml)}
+              </div>
+            )}
           </div>
+          <div className="flex items-start space-x-4 mt-4">
+            {/* Comment Input Section */}
+            <div className="space-y-4 mt-4">
+              {/* Comment Input Section */}
+              <div className="max-w-sm">
+                <h3 className="text-lg font-semibold mb-2">Add a Comment:</h3>
+                <textarea
+                  placeholder="Comment about the response..."
+                  value={commentInput}
+                  onChange={(e) => handleTextAreaChange(e, setCommentInput)}
+                  className="textarea w-full p-2 border rounded-md"
+                  rows={3}
+                />
+              </div>
 
-          <div className="flex space-x-2 mt-4">
-            <Button className="flex-1" onClick={handleGenerateCampaign}>
-              <FiRefreshCw className="w-4 h-4 mr-2" />
-              Regenerate
-            </Button>
-            <Button className="flex-1" onClick={handleGenerateHtml}>
-              <BiDownload className="w-4 h-4 mr-2" />
-              Download as HTML
-            </Button>
+              {/* Buttons Section */}
+              <div className="grid grid-cols-2 gap-4">
+                <Button className="flex items-center justify-center space-x-1 px-4 py-2 bg-blue-500 text-white rounded-md w-full" onClick={handleGenerateComment}>
+                  Regenerate Response Based on Comment
+                </Button>
+                <Button className="flex items-center justify-center space-x-1 px-4 py-2 bg-green-500 text-white rounded-md w-full" onClick={handleDownloadHtml}>
+                  <BiDownload className="w-4 h-4" />
+                  <span>Download as HTML</span>
+                </Button>
+              </div>
+            </div>
           </div>
-
           {/* Learn My Changes and Rating Section */}
           <div className="generated-reply mt-4">
             <h3 className="text-lg font-semibold mb-2">Adjust Reply and Learn</h3>
             <textarea
               placeholder="Adjust the reply here..."
-              value={generatedCampaign}
-              onChange={(e) => setGeneratedCampaign(e.target.value)}
+              value={previousReply}
+              onChange={(e) => setPreviousReply(e.target.value)}
               className="textarea mb-4"
             />
 
@@ -248,16 +327,7 @@ const EmailCampaigns: React.FC = () => {
             </Button>
           </div>
 
-          <div className="comment-input mt-4">
-            <h3 className="text-lg font-semibold mb-2">Add a Comment:</h3>
-            <textarea
-              placeholder="Comment about the response..."
-              value={commentInput}
-              onChange={(e) => handleTextAreaChange(e, setCommentInput)}
-              className="textarea mb-4"
-            />
-            <Button onClick={handleGenerateComment}>Regenerate Response Based on Comment</Button>
-          </div>
+
         </div>
       </div>
     </Card>

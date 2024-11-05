@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import axiosInstance from '../../utils/axiosInterceptors';
+import { useSelector } from 'react-redux';
 
 type EmailType = {
   id: number;
@@ -13,6 +14,7 @@ const EmailTypesTab: React.FC = () => {
   const [emailTypes, setEmailTypes] = useState<EmailType[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [currentEmailType, setCurrentEmailType] = useState<EmailType | null>(null);
+  const authState = useSelector((state: any) => state.auth);
 
   useEffect(() => {
     fetchEmailTypes();
@@ -20,7 +22,7 @@ const EmailTypesTab: React.FC = () => {
 
   const fetchEmailTypes = async () => {
     try {
-      const response = await axiosInstance.get('/email-types');
+      const response = await axiosInstance.get(`/email-types/${authState.id}`);
       // Ensure response data is an array
       if (Array.isArray(response.data)) {-
         setEmailTypes(response.data);
@@ -37,10 +39,10 @@ const EmailTypesTab: React.FC = () => {
   const handleSave = async () => {
     console.log(currentEmailType)
     if (currentEmailType && currentEmailType?.id !=0) {
-      await axiosInstance.put(`/email-types/${currentEmailType.id}`,currentEmailType);
+      await axiosInstance.put(`/email-types/${currentEmailType.id}`,{...currentEmailType,userId:authState.id});
     } else {
      
-      await axiosInstance.post('/email-types', currentEmailType);
+      await axiosInstance.post('/email-types', {...currentEmailType,userId:authState.id});
     }
     setShowModal(false);
     fetchEmailTypes();
@@ -117,8 +119,7 @@ const EmailTypesTab: React.FC = () => {
             </Form.Group>
             <Form.Group>
               <Form.Label>Description</Form.Label>
-              <Form.Control
-                type="text"
+              <textarea
                 value={currentEmailType?.description || ''}
                 onChange={(e) => 
                   setCurrentEmailType((prev) => ({

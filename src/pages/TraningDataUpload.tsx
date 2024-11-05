@@ -33,6 +33,7 @@ const TrainingDataUpload = () => {
   const [isDeleting, setIsDeleting] = useState<string>('');
   const [error, setError] = useState<string>('');
   const auth = useSelector((state: any) => state.auth);
+  const [productName, setProductName] = useState<string>('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -123,6 +124,7 @@ const TrainingDataUpload = () => {
       formData.append('additionalInfo', additionalInfo);
       formData.append('userId', auth.id);
       formData.append('isAdmin', auth.role);
+      formData.append('productName', productName);
 
       await axiosInstance.post('/assistants/upload', formData);
       await fetchExistingDocuments();
@@ -210,13 +212,26 @@ const TrainingDataUpload = () => {
                       <option value="previousSuccessfulCampaigns">Previous Successful Campaigns</option>
                       <option value="companyInfo">Company Information</option>
                       <option value="customerAvatar">Customer Avatar</option>
-                      <option value="productInfo">Product Information</option>
+                      <option value="productInfo">Product Profile</option>
                       <option value="otherInfo">Any Other Info</option>
                     </>
                   )}
                 </select>
               </div>
             )}
+
+            {fileType=="productInfo" && (
+     <div>
+     <label htmlFor="product-name">Ürün Adı:</label>
+     <input
+       id="product-name"
+       type="text"
+       placeholder="Product Name"
+       value={productName} // Input'un değeri state ile kontrol ediliyor
+       onChange={(e) => setProductName(e.target.value)} // Input değeri değiştiğinde güncelle
+     />
+   </div>
+      )}
           </div>
 
           <div>
@@ -338,6 +353,7 @@ const TrainingDataUpload = () => {
           </div>
         )}
 
+ 
         <div className="flex justify-end">
           <button
             onClick={handleTrainAI}

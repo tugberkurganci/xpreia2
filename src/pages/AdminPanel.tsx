@@ -3,12 +3,13 @@ import { Card, Tabs, Tab } from 'react-bootstrap';
 
 import './AdminPanel.css';
 import AiTemplatesTab from './AdminPanel/AiTemplatesTab';
-import ProductProfilesTab from './AdminPanel/ProductProfilesType';
 import EmailTypesTab from './AdminPanel/EmailType';
 import TrainingDataUpload from './TraningDataUpload';
 import Header from './AdminPanel/Header';
 import Sidebar from './AdminPanel/Sidebar';
-import TestArea from './AdminPanel/TestArea';
+import Shopify from './AdminPanel/Shopify';
+import EmailCampaignGuides from './AdminPanel/EmailCampaignGuides';
+import CustomerServiceGuide from './AdminPanel/CustomerServiceGuide';
 
 const AdminPanel: React.FC = () => {
   const [selectedSection, setSelectedSection] = useState<string>('dashboard');
@@ -36,7 +37,7 @@ const AdminPanel: React.FC = () => {
             {selectedSection === 'campaign-settings' && (
               <Card>
                 <Card.Header>
-                  <h2>Campaign Settings</h2>
+                  <h2> Email Campaign Settings</h2>
                 </Card.Header>
                 <Card.Body>
                   <Tabs
@@ -50,9 +51,7 @@ const AdminPanel: React.FC = () => {
                     <Tab eventKey="email-types" title="Email Types">
                       <EmailTypesTab />
                     </Tab>
-                    <Tab eventKey="product-profiles" title="Product Profiles">
-                      <ProductProfilesTab />
-                    </Tab>
+                
                     <Tab eventKey="ai-templates" title="AI Templates">
                       <AiTemplatesTab />
                     </Tab>
@@ -74,20 +73,14 @@ const AdminPanel: React.FC = () => {
             )}
 
             {selectedSection === 'settings' && (
-              <Card>
-                <Card.Header>
-                  <h2>Settings</h2>
-                </Card.Header>
-                <Card.Body>
-                  <p>Adjust system configurations, notification preferences, and account settings.</p>
-                  {/* Additional settings content */}
-                </Card.Body>
-              </Card>
+            <Shopify/>
             )}
 
             {selectedSection === 'trainingData' && <TrainingDataUpload />}
 
-            {selectedSection === 'test-area' && <TestArea />}
+            {selectedSection === 'customer-area' && <CustomerServiceGuide />}
+
+            {selectedSection === 'email-area' && <EmailCampaignGuides />}
           </div>
         </div>
       </div>

@@ -53,8 +53,8 @@ const Navbar = () => {
             </Link>
           </li>
 
-          {authState.role === "ADMIN" && 
-          (
+          
+          
             <li className="nav-item">
               <Link
                 className={`nav-link ${
@@ -67,7 +67,7 @@ const Navbar = () => {
                 Admin
               </Link>
             </li>
-          )}
+          
         </ul>
 
         <div className="col text-end">

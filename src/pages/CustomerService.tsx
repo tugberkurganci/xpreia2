@@ -7,8 +7,8 @@ const CustomerService: React.FC = () => {
   const [emailThread, setEmailThread] = useState<string>('');
   const [generatedReply, setGeneratedReply] = useState<string>('');
   const [previousReply, setPreviousReply] = useState<string>('');
-  const [commentInput, setCommentInput] = useState<string>(''); 
-  const auth = useSelector((state:any) => state.auth);
+  const [commentInput, setCommentInput] = useState<string>('');
+  const auth = useSelector((state: any) => state.auth);
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false); // Loading state
@@ -16,10 +16,10 @@ const CustomerService: React.FC = () => {
   const handleGenerateReply = async (): Promise<void> => {
     setLoading(true); // Start loading
     try {
-      const response = await axiosInstance.post('/assistants', { 
-        userId: auth.id, 
-        chatId: auth.id, 
-        userMessage: emailThread + " .sadece email örneği atmalısın" 
+      const response = await axiosInstance.post('/assistants', {
+        userId: auth.id,
+        chatId: auth.id,
+        userMessage: emailThread + " .sadece email örneği atmalısın ve son gelen mesaja"
       });
       setGeneratedReply(response.data);
       setPreviousReply(response.data);
@@ -54,12 +54,12 @@ const CustomerService: React.FC = () => {
   const handleGenerateComment = async (): Promise<void> => {
     setLoading(true); // Start loading
     try {
-      const response = await axiosInstance.post('/assistants', { 
-        userId: auth.id, 
-        chatId: auth.id, 
-        userMessage: "bu bir kullanıcı yorumu geçmiş mesajların üstüne :" + commentInput 
+      const response = await axiosInstance.post('/assistants', {
+        userId: auth.id,
+        chatId: auth.id,
+        userMessage: "bu bir kullanıcı yorumu geçmiş mesajların üstüne :" + commentInput
       });
-      setGeneratedReply(response.data); 
+      setGeneratedReply(response.data);
       alert('Reply regenerated successfully.');
     } catch (error) {
       console.error('Error regenerating reply:', error);
@@ -92,8 +92,32 @@ const CustomerService: React.FC = () => {
         {loading ? 'Generating...' : 'Generate Reply'}
       </button>
 
+      
+      <div className="border rounded p-4 min-h-32 bg-gray-50 mt-4">
+            <p className="text-gray-400">{'Generated content will appear here...'}</p>
+            {/* HTML Preview */}
+            
+              <div className="html-preview mt-4 p-2 border-t">
+                {generatedReply}
+              </div>
+            
+          </div>
+    <div className="comment-input mt-4">
+  <h3 className="text-lg font-semibold mb-2">Add a Comment:</h3>
+  <textarea
+    placeholder="Enter your comment here..."
+    value={commentInput}
+    onChange={(e) => handleTextAreaChange(e, setCommentInput)}
+  />
+</div>
+
+
+
+      <button onClick={handleGenerateComment} className="primary" disabled={loading}>
+        {loading ? 'Regenerating...' : '  Regenerate Response Based on Comment'}
+      </button>
       <div className="generated-reply mt-4">
-        <h3 className="text-lg font-semibold mb-2">Reply:</h3>
+        <h3 className="text-lg font-semibold mb-2">Generated Reply:</h3>
         <textarea
           placeholder="Adjust the reply here..."
           value={generatedReply}
@@ -123,19 +147,7 @@ const CustomerService: React.FC = () => {
           {loading ? 'Submitting Changes...' : 'Adjust and Learn My Changes'}
         </button>
 
-        <div className="comment-input mt-4">
-          <h3 className="text-lg font-semibold mb-2">Add a Comment:</h3>
-          <textarea
-            placeholder="Enter your comment here..."
-            value={commentInput}
-            onChange={(e) => handleTextAreaChange(e, setCommentInput)}
-            className="textarea mb-4"
-          />
-        </div>
 
-        <button onClick={handleGenerateComment} className="primary" disabled={loading}>
-          {loading ? 'Regenerating...' : 'Regenerate Reply'}
-        </button>
       </div>
     </div>
   );

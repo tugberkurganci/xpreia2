@@ -10,11 +10,10 @@ type SidebarProps = {
 const Sidebar: React.FC<SidebarProps> = ({ selectedSection, setSelectedSection }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
-    { id: 'campaign-settings', label: 'Campaign Settings', icon: Mail },
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'settings', label: 'Settings', icon: Settings },
-    { id: 'trainingData', label: 'Traning Data', icon: Settings },
-    { id: 'test-area', label: 'Edit Config Data', icon: Settings },
+    { id: 'campaign-settings', label: 'Email Campaign Settings', icon: Mail },
+    { id: 'settings', label: 'Shopify Settings', icon: Settings },
+    { id: 'customer-area', label: ' Customer Service Edit Guide', icon: Settings },
+    { id: 'email-area', label: 'Email Campaign Edit Guide', icon: Settings },
   ];
 
   return (
