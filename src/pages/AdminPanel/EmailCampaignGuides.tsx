@@ -50,7 +50,7 @@ const EmailCampaignGuides: React.FC = () => {
       {loading ? (
         <p>Loading...</p> // Loading indicator
       ) : (
-        guides.length > 0 && (
+         
           <div>
             <textarea
               value={content}
@@ -60,7 +60,7 @@ const EmailCampaignGuides: React.FC = () => {
             />
             <button onClick={handleUpdate}>Save Changes</button>
           </div>
-        )
+        
       )}
     </div>
   );

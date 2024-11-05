@@ -5,7 +5,6 @@ import { BiDownload } from 'react-icons/bi';
 import { FaStar } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import parse from 'html-react-parser';
-import { TbRuler } from 'react-icons/tb';
 
 
 const EmailCampaigns: React.FC = () => {

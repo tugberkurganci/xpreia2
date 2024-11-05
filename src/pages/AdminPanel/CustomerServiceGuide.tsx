@@ -58,7 +58,7 @@ const CustomerServiceGuide: React.FC = () => {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Description"
-                  required
+                  
                 />
               ) : (
                 <p>{guide.content}</p>
