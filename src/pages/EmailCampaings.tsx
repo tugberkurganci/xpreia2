@@ -5,6 +5,7 @@ import { BiDownload } from 'react-icons/bi';
 import { FaStar } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import parse from 'html-react-parser';
+import DOMPurify from 'dompurify';
 
 
 const EmailCampaigns: React.FC = () => {
@@ -12,7 +13,7 @@ const EmailCampaigns: React.FC = () => {
   const [productProfile, setProductProfile] = useState<{ id: number; name: string;content:string; vectorStoreId: string }>();
   const [aiTemplate, setAiTemplate] = useState<{ id: number; name: string; content: string }>();
   const [generatedCampaign, setGeneratedCampaign] = useState<string>('');
-  const [generatedHtml, setGeneratedHtml] = useState<string>('');
+  const [generatedHtml, setGeneratedHtml] = useState<any>();
   const [previousReply, setPreviousReply] = useState<string>(''); // İlk yanıt
   const [commentInput, setCommentInput] = useState<string>('');
   const [rating, setRating] = useState<number>(0);
@@ -27,8 +28,10 @@ const EmailCampaigns: React.FC = () => {
   const handleGenerateHtml = async (campaignData: string) => {
 
 
-    setGeneratedHtml(campaignData)
+    
+    const sanitizedHtml = DOMPurify.sanitize(campaignData);
 
+    setGeneratedHtml(parse(sanitizedHtml));
   };
   useEffect(() => {
     fetchEmailTypes();
@@ -97,7 +100,7 @@ const EmailCampaigns: React.FC = () => {
 
    /*  const campaignInput = `Generate Email Campaing  and generate Html  with theese informations :Email Type:  ${emailType?.name} content : ${emailType?.description},
      only select this Product Profile : ${productProfile?.name}  content : ${productProfile?.description}  dont add another.  
-      ONLY  SELECT :"${aiTemplate?.name}" AND GENERATE, html kodunu oluştur bu bilgilerle dont use ('oliclass='step'') `;
+      ONLY  SELECT :"${aiTemplate?.name}" AND GENERATE, html kodunu oluştur bu bilgilerle .`;
 */
     console.log(campaignInput)
     try {
@@ -291,7 +294,7 @@ const EmailCampaigns: React.FC = () => {
             {/* HTML Preview */}
             {generatedHtml && (
               <div className="html-preview mt-4 p-2 border-t">
-                {parse(generatedHtml)}
+                {generatedHtml}
               </div>
             )}
           </div>
