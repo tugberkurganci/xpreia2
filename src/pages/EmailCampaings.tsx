@@ -97,7 +97,7 @@ const EmailCampaigns: React.FC = () => {
 
    /*  const campaignInput = `Generate Email Campaing  and generate Html  with theese informations :Email Type:  ${emailType?.name} content : ${emailType?.description},
      only select this Product Profile : ${productProfile?.name}  content : ${productProfile?.description}  dont add another.  
-      ONLY  SELECT :"${aiTemplate?.name}" AND GENERATE, html kodunu oluştur bu bilgilerle`;
+      ONLY  SELECT :"${aiTemplate?.name}" AND GENERATE, html kodunu oluştur bu bilgilerle dont use ('oliclass='step'') `;
 */
     console.log(campaignInput)
     try {
