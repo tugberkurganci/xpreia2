@@ -169,7 +169,7 @@ const EmailCampaigns: React.FC = () => {
       setPreviousReply(result)
           handleGenerateHtml(result)
 
-      alert('Comment processed and reply regenerated.');
+      alert('Comment processed andd reply regenerated.');
       setIsLoading(false);
 
     } catch (error) {
