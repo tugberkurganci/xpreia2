@@ -19,7 +19,7 @@ const CustomerService: React.FC = () => {
       const response = await axiosInstance.post('/assistants', {
         userId: auth.id,
         chatId: auth.id,
-        userMessage: emailThread + " .sadece email örneği atmalısın ve son gelen mesaja"
+        userMessage: emailThread + " .You should only send an email example and respond to the last message."
       });
       setGeneratedReply(response.data);
       setPreviousReply(response.data);
@@ -57,7 +57,7 @@ const CustomerService: React.FC = () => {
       const response = await axiosInstance.post('/assistants', {
         userId: auth.id,
         chatId: auth.id,
-        userMessage: "bu bir kullanıcı yorumu geçmiş mesajların üstüne :" + commentInput
+        userMessage: "This is a user comment on top of previous messages. :" + commentInput
       });
       setGeneratedReply(response.data);
       alert('Reply regenerated successfully.');
