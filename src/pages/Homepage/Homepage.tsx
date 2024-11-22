@@ -61,8 +61,8 @@ const Homepage: React.FC = () => {
 
 
           <div className="active-component-container">
-            {activeComponent === 'trainingData' && <TrainingDataUpload onChange={setBrandTone} />}
-            {activeComponent === 'customerService' && <CustomerService brandTone={brandTone} />}
+            {activeComponent === 'trainingData' && <TrainingDataUpload  />}
+            {activeComponent === 'customerService' && <CustomerService />}
             {activeComponent === 'emailCampaigns' && <EmailCampaigns />}
           </div>
         </div>
