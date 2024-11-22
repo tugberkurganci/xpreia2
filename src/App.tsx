@@ -6,6 +6,7 @@ import SignIn from "./pages/SignIn/SıgnIn";
 import SignUp from "./pages/SingUp/SıngUp";
 import NotFound from "./pages/NotFound/NotFound";
 import AdminPanel from "./pages/AdminPanel";
+import Element from "./pages/Element";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/dashboard" element={<AdminPanel />} />
+          <Route path="/payment" element={<Element />} />
           <Route path="*" element={<NotFound />} />
           
         </Routes>

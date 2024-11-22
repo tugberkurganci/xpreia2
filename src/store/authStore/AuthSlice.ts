@@ -24,7 +24,14 @@ export const authSlice =createSlice({
             
             delete state.email
             delete state.role
+            delete state.isActive
             setToken()
+        },
+        setActive:(state,action)=>{
+
+           
+           state.isActive = action.payload;
+           
         },
 
        
@@ -33,4 +40,4 @@ export const authSlice =createSlice({
 })
 
 
-export const{ loginSuccess,logoutSuccess}=authSlice.actions;
+export const{ loginSuccess,logoutSuccess,setActive}=authSlice.actions;

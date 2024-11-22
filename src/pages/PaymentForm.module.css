@@ -1,0 +1,99 @@
+/* PaymentForm.module.css */
+.paymentForm {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+  .cardElement {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+  
+  .paymentForm h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .planSelector {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .planButton {
+    flex: 1;
+    padding: 12px;
+    margin: 0 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .planButton.starter {
+    background-color: #007bff;
+  }
+  
+  .planButton.pro {
+    background-color: #6f42c1;
+  }
+  
+  .planButton.active {
+    border: 3px solid #ffc107;
+  }
+  
+  .inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .inputField {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .inputField:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  .submitButton {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submitButton:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  .submitButton:hover:not(:disabled) {
+    background-color: #218838;
+  }
+  

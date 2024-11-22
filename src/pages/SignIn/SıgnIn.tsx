@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import axiosInstance, { setToken } from "../../utils/axiosInterceptors";
-import { loginSuccess } from "../../store/authStore/AuthSlice";
+import { loginSuccess, setActive } from "../../store/authStore/AuthSlice";
 import FormikInput from "../../components/FormikInput/FormikInput";
 import "./signIn.css"; // Add this line to import the custom CSS file
 
@@ -41,13 +41,16 @@ const SignIn = () => {
       setSubmitting(true);
 
       const response = await axiosInstance.post("/auth", values);
-
+        console.log(response)
       dispatch(loginSuccess(response.data.user));
-
+      dispatch(setActive(response.data.active));
       setToken(response.data.token.token);
-
+      
       navigate("/");
     } catch (error: any) {
+      
+
+console.log(error)
       if (error.response.data.validationErrors) {
         const validationErrors: Record<string, string> =
           error.response.data.validationErrors;

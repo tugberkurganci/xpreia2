@@ -2,8 +2,11 @@ import React, { useState, ChangeEvent } from 'react';
 import axiosInstance from './../utils/axiosInterceptors';
 import { useSelector } from 'react-redux';
 import { FaStar } from 'react-icons/fa';
+interface BrandToneProps {
+  brandTone:string
+}
 
-const CustomerService: React.FC = () => {
+const CustomerService: React.FC<BrandToneProps> = ({ brandTone }) => {
   const [emailThread, setEmailThread] = useState<string>('');
   const [generatedReply, setGeneratedReply] = useState<string>('');
   const [previousReply, setPreviousReply] = useState<string>('');
@@ -12,15 +15,19 @@ const CustomerService: React.FC = () => {
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false); // Loading state
+  const rentalState = useSelector((store: any) => store.rental);
 
+ 
   const handleGenerateReply = async (): Promise<void> => {
     setLoading(true); // Start loading
+    console.log( emailThread + ` .You should only send an email example and respond to the last message.brand tone : ${rentalState.brandTone}`)
     try {
       const response = await axiosInstance.post('/assistants', {
         userId: auth.id,
         chatId: auth.id,
-        userMessage: emailThread + " .You should only send an email example and respond to the last message."
+        userMessage: emailThread + ` .You should only send an email example and respond to the last message.brand tone : ${rentalState.brandTone} .only show content`
       });
+      
       setGeneratedReply(response.data);
       setPreviousReply(response.data);
       console.log(response.data);

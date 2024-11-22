@@ -1,34 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './homepage.css';
 import TrainingDataUpload from '../TraningDataUpload';
 import CustomerService from '../CustomerService';
 import EmailCampaigns from '../EmailCampaings';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import Pricing from '../Pricing';
 
 const Homepage: React.FC = () => {
   const auth = useSelector((state: any) => state.auth);
+  const [brandTone, setBrandTone] = useState<string>("friendly")
 
   // State to track which component is currently active
   const [activeComponent, setActiveComponent] = React.useState<'trainingData' | 'customerService' | 'emailCampaigns' | null>(null);
 
-  return (
+  return (<>
     <div className="app">
-      {auth.id === 0 ? (
+      {auth.id === 0 ? (<div>
         <div className="welcome-container">
           <div className="welcome-overlay">
             <h1 className="welcome-title">Welcome to BlueSky AI</h1>
+
             <p className="welcome-message">
               Streamline your email interactions and launch custom campaigns with our AI-powered assistant.
             </p>
+
             <div className="example-messages">
-              <p>🚀 *"Automatically generate responses to customer emails in seconds!"*</p>
-              <p>💌 *"Design, customize, and manage your email campaigns effortlessly!"*</p>
-              <p>✨ *"Enhance your customer service while saving time!"*</p>
+              <p>🚀 <em>"Automatically generate responses to customer emails in seconds!"</em></p>
+              <p>💌 <em>"Design, customize, and manage your email campaigns effortlessly!"</em></p>
+              <p>✨ <em>"Enhance your customer service while saving time!"</em></p>
             </div>
-            <button className="welcome-button">Log in or Sign up to Get Started</button>
+
+
+
+            {/* Login Button */}
+
+
+            <Link to="/login" className="welcome-link"><button className="welcome-button">Sign Up & Log In</button></Link>
+
           </div>
         </div>
-      ) : (
+
+      </div>
+      ) : (auth.isActive ?
         <div className="content-container">
           <div className="component-select">
             <div onClick={() => setActiveComponent('trainingData')} className="component-thumbnail">
@@ -45,15 +59,15 @@ const Homepage: React.FC = () => {
             </div>
           </div>
 
-          {/* Display the selected component */}
+
           <div className="active-component-container">
-            {activeComponent === 'trainingData' && <TrainingDataUpload />}
-            {activeComponent === 'customerService' && <CustomerService />}
+            {activeComponent === 'trainingData' && <TrainingDataUpload onChange={setBrandTone} />}
+            {activeComponent === 'customerService' && <CustomerService brandTone={brandTone} />}
             {activeComponent === 'emailCampaigns' && <EmailCampaigns />}
           </div>
         </div>
-      )}
-    </div>
+        : <> <Pricing></Pricing></>)}
+    </div></>
   );
 };
 

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect, ChangeEvent, DragEvent } from 'react';
 import axiosInstance from '../utils/axiosInterceptors';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Loader2, Upload, X, FileText, Trash2 } from 'lucide-react';
 import "./TraningData.css"
+import { loadRental } from '../store/rentalSlice';
 
 interface Document {
   id: string;
@@ -11,6 +12,10 @@ interface Document {
   fileType: string;
   uploadDate: string;
   size: number;
+}
+const brandTones = ["Friendly", "Professional", "Bold", "Playful", "Trustworthy"];
+interface BrandToneDropdownProps {
+  onChange: (selectedTone: string) => void; // Üst bileşene seçilen tonu iletmek için
 }
 
 interface UploadedFile {
@@ -21,8 +26,8 @@ interface UploadedFile {
   uploadDate: Date;
   type: string;
 }
+const TrainingDataUpload: React.FC<BrandToneDropdownProps> = ({ onChange }) => {
 
-const TrainingDataUpload = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [existingDocuments, setExistingDocuments] = useState<Document[]>([]);
   const [category, setCategory] = useState<string>('');
@@ -34,11 +39,23 @@ const TrainingDataUpload = () => {
   const [error, setError] = useState<string>('');
   const auth = useSelector((state: any) => state.auth);
   const [productName, setProductName] = useState<string>('');
+const [productUrl, setProductUrl] = useState<string>('')
+  const dispatch = useDispatch();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const rentalState = useSelector((store: any) => store.rental);
+
+  const [selectedTone, setSelectedTone] = useState<string>(rentalState.brandTone);
+
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = event.target.value;
+    setSelectedTone(selected);
+    dispatch(loadRental(selected))
+  };
+
 
   useEffect(() => {
-    if (fileType && auth.id) {
+    if (fileType && auth.id && fileType != "Brand Tone") {
       fetchExistingDocuments();
     }
   }, [fileType]);
@@ -118,22 +135,38 @@ const TrainingDataUpload = () => {
     setError('');
     try {
       const formData = new FormData();
+      console.log(uploadedFiles);
 
-      formData.append('file', uploadedFiles[0]?.file);
+      uploadedFiles.forEach((actualFile: UploadedFile) => {
+        // Check if `actualFile` contains a `File` object
+        const file = actualFile.file || actualFile; // Assuming actualFile has a property `file`
+        if (file instanceof File) {
+            formData.append('files', file);
+        } else {
+            console.error('The uploaded file is not a valid File.');
+        }
+    });
+      
       formData.append('fileType', fileType);
       formData.append('additionalInfo', additionalInfo);
       formData.append('userId', auth.id);
       formData.append('isAdmin', auth.role);
       formData.append('productName', productName);
+      formData.append('productUrl', productUrl);
 
       await axiosInstance.post('/assistants/upload', formData);
       await fetchExistingDocuments();
       setUploadedFiles([]);
       setAdditionalInfo('');
+       setProductUrl('')
+       setProductName('')
+      alert('AI has learned from your changes.');
+     
 
     } catch (error: any) {
       console.error('Error training AI:', error);
       setError('Failed to train AI: ' + (error.response?.data || error.message));
+
     } finally {
       setIsLoading(false);
     }
@@ -185,6 +218,7 @@ const TrainingDataUpload = () => {
                 <option value="">Select Category</option>
                 <option value="Customer Service">Customer Service</option>
                 <option value="Email Campaigns">Email Campaigns</option>
+                <option value="Brand Tone">Brand Tone</option>
               </select>
             </div>
 
@@ -216,159 +250,199 @@ const TrainingDataUpload = () => {
                       <option value="otherInfo">Any Other Info</option>
                     </>
                   )}
+
+                  {category === 'Brand Tone' && (
+                    <>
+                      <option value="Brand Tone">Brand Tone</option>
+
+                    </>
+                  )}
                 </select>
               </div>
             )}
 
-            {fileType=="productInfo" && (
-     <div>
-     <label htmlFor="product-name">Ürün Adı:</label>
-     <input
-       id="product-name"
-       type="text"
-       placeholder="Product Name"
-       value={productName} // Input'un değeri state ile kontrol ediliyor
-       onChange={(e) => setProductName(e.target.value)} // Input değeri değiştiğinde güncelle
-     />
-   </div>
-      )}
+            {fileType == "productInfo" && (<div>
+              <div>
+                <label htmlFor="product-name">Product Name</label>
+                <input
+                  id="product-name"
+                  type="text"
+                  placeholder="Product Name"
+                  value={productName} // Input'un değeri state ile kontrol ediliyor
+                  onChange={(e) => setProductName(e.target.value)} // Input değeri değiştiğinde güncelle
+                />
+              </div>
+
+<div>
+<label htmlFor="setProductUrl">Product Url</label>
+<input
+  id="product-url"
+  type="text"
+  placeholder="Product Url"
+  value={productUrl} // Input'un değeri state ile kontrol ediliyor
+  onChange={(e) => setProductUrl(e.target.value)} // Input değeri değiştiğinde güncelle
+/>
+</div>
+          </div>  )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Additional Information</label>
-            <textarea
-              value={additionalInfo}
-              onChange={(e) => setAdditionalInfo(e.target.value)}
-              className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              rows={4}
-              placeholder="Enter any additional info..."
-            />
-          </div>
-        </div>
 
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors duration-200 ${isDragging
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-300 hover:border-blue-500 hover:bg-gray-50'
-            }`}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileSelect}
-            multiple
-            accept={
-              fileType === 'previousEmailsSent'
-                ? '.txt,.doc,.eml,.xlsx'
-                : fileType === 'otherInfo'
-                  ? '.txt,.doc,'
-                  : '.txt,.doc'
-            } className="hidden"
-          />
-          <div className="space-y-4">
-            <Upload className="w-12 h-12 mx-auto text-gray-400" />
+          {fileType == "Brand Tone" && (
             <div>
-              <p className="text-gray-600">
-                Drag and drop {fileType === "previousEmailsSent"
-                  ? "TXT, DOC, or EML XLSX files"
-                  : fileType === "otherInfo"
-                    ? "TXT, DOC, or XLSX files"
-                    : "TXT or DOC files"} here or              </p>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              <label htmlFor="brand-tone-select">Select Brand Tone:</label>
+              <select
+                id="brand-tone-select"
+                value={selectedTone}
+                onChange={handleChange}
+                style={{ padding: "8px", margin: "8px 0", borderRadius: "4px" }}
               >
-                Choose Files
-              </button>
-
+                <option value="" disabled>Select a tone</option>
+                {brandTones.map((tone) => (
+                  <option key={tone} value={tone}>{tone}</option>
+                ))}
+              </select>
+            </div>)
+          }
+          { fileType !="Brand Tone" &&(<div>
+            <div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Additional Information</label>
+                <textarea
+                  value={additionalInfo}
+                  onChange={(e) => setAdditionalInfo(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  rows={4}
+                  placeholder="Enter any additional info..."
+                />
+              </div>
             </div>
-          </div>
-        </div>
 
-        {uploadedFiles.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">Uploaded Files</h3>
-            <div className="space-y-2">
-              {uploadedFiles.map((file) => (
-                <div
-                  key={file.name}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <FileText className="w-6 h-6 text-gray-400" />
-                    <div>
-                      <p className="font-medium text-gray-900">{file.name}</p>
-                      <p className="text-sm text-gray-500">
-                        {(file.size / 1024).toFixed(2)} KB • Uploaded {file.uploadDate.toLocaleTimeString()}
-                      </p>
-                    </div>
-                  </div>
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors duration-200 ${isDragging
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-300 hover:border-blue-500 hover:bg-gray-50'
+                }`}
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                multiple
+                accept={
+                  fileType === 'previousEmailsSent'
+                    ? '.txt,.doc,.eml,.xlsx'
+                    : fileType === 'otherInfo'
+                      ? '.txt,.doc,'
+                      : '.txt,.doc'
+                } className="hidden"
+              />
+              <div className="space-y-4">
+                <Upload className="w-12 h-12 mx-auto text-gray-400" />
+                <div>
+                  <p className="text-gray-600">
+                    Drag and drop {fileType === "previousEmailsSent"
+                      ? "TXT, DOC, or EML XLSX files"
+                      : fileType === "otherInfo"
+                        ? "TXT, DOC, or XLSX files"
+                        : "TXT or DOC files"} here or              </p>
                   <button
-                    onClick={() => handleRemoveFile(file.name)}
-                    className="p-2 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
-                    <X className="w-5 h-5" />
+                    Choose Files
                   </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {existingDocuments.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900">Existing Documents</h3>
-            <div className="space-y-2">
-              {existingDocuments.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <FileText className="w-6 h-6 text-gray-400" />
-                    <div>
-                      <p className="font-medium text-gray-900">{doc.name}</p>
-                      <p className="text-sm text-gray-500">
-                        Type: {doc.fileType} • FileName :{doc.name} • {(doc.size / 1024).toFixed(2)} KB
-                      </p>
+                </div>
+              </div>
+            </div>
+
+            {uploadedFiles.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">Uploaded Files</h3>
+                <div className="space-y-2">
+                  {uploadedFiles.map((file) => (
+                    <div
+                      key={file.name}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <FileText className="w-6 h-6 text-gray-400" />
+                        <div>
+                          <p className="font-medium text-gray-900">{file.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {(file.size / 1024).toFixed(2)} KB • Uploaded {file.uploadDate.toLocaleTimeString()}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveFile(file.name)}
+                        className="p-2 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
                     </div>
-                  </div>
-                  <button
-                    onClick={() => handleDeleteDocument(doc.vectorStoreId)}
-                    disabled={isDeleting === doc.vectorStoreId}
-                    className="p-2 text-gray-400 hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                  >
-                    {isDeleting === doc.vectorStoreId ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Trash2 className="w-5 h-5" />
-                    )}
-                  </button>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
- 
-        <div className="flex justify-end">
-          <button
-            onClick={handleTrainAI}
-            disabled={isLoading}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              'Train AI'
+              </div>
             )}
-          </button>
+
+            {existingDocuments.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">Existing Documents</h3>
+                <div className="space-y-2">
+                  {existingDocuments.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <FileText className="w-6 h-6 text-gray-400" />
+                        <div>
+                          <p className="font-medium text-gray-900">{doc.name}</p>
+                          <p className="text-sm text-gray-500">
+                            Type: {doc.fileType} • FileName :{doc.name} • {(doc.size / 1024).toFixed(2)} KB
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteDocument(doc.vectorStoreId)}
+                        disabled={isDeleting === doc.vectorStoreId}
+                        className="p-2 text-gray-400 hover:text-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                      >
+                        {isDeleting === doc.vectorStoreId ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+
+            <div className="flex justify-end">
+              <button
+                onClick={handleTrainAI}
+                disabled={isLoading}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Train AI'
+                )}
+              </button>
+            </div>
+
+          </div>)}
         </div>
       </div>
     </div>

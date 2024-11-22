@@ -1,0 +1,106 @@
+/* Genel ayarlar */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9fafb;
+  }
+  
+  .pricing-section {
+    text-align: center;
+    padding: 50px 20px;
+    background: #f3f4f6;
+  }
+  
+  .pricing-header {
+    font-size: 2.5rem;
+    color: #222222;
+    margin-bottom: 10px;
+  }
+  
+  .pricing-description {
+    font-size: 1rem;
+    color: #555555;
+    margin-bottom: 40px;
+  }
+  
+  /* Kartlar */
+  .pricing-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .pricing-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .pricing-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  .highlighted {
+    border: 2px solid #007bff;
+    background: #eef6ff;
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .card-price {
+    font-size: 2rem;
+    color: #007bff;
+    margin: 10px 0;
+  }
+  
+  .card-price span {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .card-details {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .card-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .card-features li {
+    font-size: 0.9rem;
+    color: #444;
+    margin-bottom: 10px;
+  }
+  
+  .card-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .card-button:hover {
+    background: #0056b3;
+  }
+  

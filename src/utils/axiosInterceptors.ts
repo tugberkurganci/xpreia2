@@ -36,15 +36,9 @@ axiosInstance.interceptors.response.use(
       console.error("403 Hatası Oluştu:", error.message);
 
       if (loadAuthState().id !== 0) {
-        const response = await axiosInstance.post("/auth/refresh", {
-          userId: loadAuthState().id,
-        });
-
-        if (response.status === 200) {
-          setToken(response.data);
-          const retryResponse = await axios.request(error.config);
-          return retryResponse;
-        }
+        store.dispatch(logoutSuccess());
+        alert('Logout Successfully and Sign In again')
+        return Promise.reject(error);
       }
     }
     if (error.response && error.response.status === 409) {
