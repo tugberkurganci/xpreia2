@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './homepage.css';
 import TrainingDataUpload from '../TraningDataUpload';
 import CustomerService from '../CustomerService';
@@ -9,7 +9,6 @@ import Pricing from '../Pricing';
 
 const Homepage: React.FC = () => {
   const auth = useSelector((state: any) => state.auth);
-  const [brandTone, setBrandTone] = useState<string>("friendly")
 
   // State to track which component is currently active
   const [activeComponent, setActiveComponent] = React.useState<'trainingData' | 'customerService' | 'emailCampaigns' | null>(null);
