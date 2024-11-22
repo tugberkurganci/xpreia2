@@ -14,9 +14,7 @@ interface Document {
   size: number;
 }
 const brandTones = ["Friendly", "Professional", "Bold", "Playful", "Trustworthy"];
-interface BrandToneDropdownProps {
-  onChange: (selectedTone: string) => void; // Üst bileşene seçilen tonu iletmek için
-}
+
 
 interface UploadedFile {
   file: File;
@@ -26,7 +24,7 @@ interface UploadedFile {
   uploadDate: Date;
   type: string;
 }
-const TrainingDataUpload: React.FC<BrandToneDropdownProps> = ({ onChange }) => {
+const TrainingDataUpload: React.FC= () => {
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [existingDocuments, setExistingDocuments] = useState<Document[]>([]);

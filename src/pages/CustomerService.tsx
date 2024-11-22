@@ -2,11 +2,9 @@ import React, { useState, ChangeEvent } from 'react';
 import axiosInstance from './../utils/axiosInterceptors';
 import { useSelector } from 'react-redux';
 import { FaStar } from 'react-icons/fa';
-interface BrandToneProps {
-  brandTone:string
-}
 
-const CustomerService: React.FC<BrandToneProps> = ({ brandTone }) => {
+
+const CustomerService: React.FC = () => {
   const [emailThread, setEmailThread] = useState<string>('');
   const [generatedReply, setGeneratedReply] = useState<string>('');
   const [previousReply, setPreviousReply] = useState<string>('');
