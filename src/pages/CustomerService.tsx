@@ -23,7 +23,7 @@ const CustomerService: React.FC = () => {
       const response = await axiosInstance.post('/assistants', {
         userId: auth.id,
         chatId: auth.id,
-        userMessage: emailThread + ` .You should only send an email example and respond to the last message.brand tone : ${rentalState.brandTone} .only show content`
+        userMessage: emailThread + ` .You should only send an email example and respond to the last message.brand tone : ${rentalState.brandTone} .only show content this is not email  campaign`
       });
       
       setGeneratedReply(response.data);
