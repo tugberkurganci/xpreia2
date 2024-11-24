@@ -6,7 +6,7 @@ import { FaStar } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
-
+import "./EmailCampaings.css";
 
 const EmailCampaigns: React.FC = () => {
   const [emailType, setEmailType] = useState<{ id: number; name: string; description: string }>();
@@ -28,7 +28,7 @@ const EmailCampaigns: React.FC = () => {
   const handleGenerateHtml = async (campaignData: string) => {
 
 
-    
+    debugger
     const sanitizedHtml = DOMPurify.sanitize(campaignData);
 
     setGeneratedHtml(parse(sanitizedHtml));
@@ -187,7 +187,7 @@ const EmailCampaigns: React.FC = () => {
   const handleDownloadHtml = () => {
     setIsLoading(true);
 
-    const blob = new Blob([generatedHtml], { type: 'text/html' });
+    const blob = new Blob([generatedCampaign], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

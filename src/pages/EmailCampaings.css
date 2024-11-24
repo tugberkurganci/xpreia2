@@ -1,0 +1,34 @@
+.html-preview {
+    background-color: #f9f9f9; /* Hafif gri arka plan */
+    border: 1px solid #ddd; /* İnce çerçeve */
+    border-radius: 8px; /* Köşeleri yuvarla */
+    padding: 16px; /* İçerik etrafında boşluk */
+    max-height: 400px; /* Maksimum yükseklik */
+    overflow-y: auto; /* Dikey kaydırma */
+    font-family: Arial, sans-serif; /* Daha okunaklı bir yazı tipi */
+    font-size: 14px; /* Küçük ve okunaklı yazı boyutu */
+    color: #333; /* Yazı rengi */
+    margin-top: 16px; /* Üstten boşluk */
+  }
+  
+  .html-preview pre {
+    background-color: #f0f0f0; /* Kod için hafif bir arka plan */
+    padding: 12px; /* Kod içeriği için boşluk */
+    border-radius: 4px; /* Köşeleri yuvarla */
+    overflow-x: auto; /* Yatay kaydırma */
+    font-family: 'Courier New', Courier, monospace; /* Monospace yazı tipi */
+    font-size: 13px; /* Kod yazısı boyutu */
+  }
+  
+  .html-preview::-webkit-scrollbar {
+    width: 8px; /* Kaydırma çubuğu genişliği */
+  }
+  
+  .html-preview::-webkit-scrollbar-thumb {
+    background: #ccc; /* Kaydırma çubuğu rengi */
+    border-radius: 4px; /* Kaydırma çubuğu köşeleri */
+  }
+  
+  .html-preview::-webkit-scrollbar-thumb:hover {
+    background: #bbb; /* Hover durumunda kaydırma çubuğu rengi */
+  }
