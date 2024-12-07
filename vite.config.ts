@@ -20,7 +20,7 @@ export default defineConfig({
   base: "/xpreia2/",
   server: {
     proxy: {
-    "/api": "http://137.184.199.29:8080"
+    "/api": "https://137.184.199.29:8080"
    
     
   },}}
