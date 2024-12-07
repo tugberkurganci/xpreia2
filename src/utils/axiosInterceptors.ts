@@ -13,9 +13,9 @@ export const axiosAssets = axios.create({
   baseURL: `/assets`,
 });
 const axiosInstance = axios.create({
- baseURL: `https://137.184.199.29:8080`,
+// baseURL: `https://137.184.199.29:8443/api/v1`,
 
-  // baseURL: `/api/v1`,
+   baseURL: `/api/v1`,
 });
 
 
@@ -23,6 +23,7 @@ axiosInstance.interceptors.request.use((config) => {
   if (authToken) {
     config.headers["Authorization"] = `Bearer ${authToken}`;
   }
+ 
   config.withCredentials = true;
   return config;
 });
