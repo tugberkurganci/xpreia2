@@ -20,7 +20,7 @@ export default defineConfig({
   base: "/xpreia2/",
   server: {
     proxy: {
-    "/api": "https://137.184.199.29:8080"
+    "/api": "https://monkfish-app-v9x5k.ondigitalocean.app/"
    
     
   },}}
