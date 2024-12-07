@@ -13,7 +13,7 @@ export const axiosAssets = axios.create({
   baseURL: `/assets`,
 });
 const axiosInstance = axios.create({
- baseURL: `https://137.184.199.29`,
+ baseURL: `http://137.184.199.29:8080`,
 
   // baseURL: `/api/v1`,
 });
