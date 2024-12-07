@@ -20,7 +20,7 @@ export default defineConfig({
   base: "/xpreia2/",
   server: {
     proxy: {
-    "/api": "https://xperia-dsbo.onrender.com/"
+    "/api": "https://137.184.199.29"
    
     
   },}}
