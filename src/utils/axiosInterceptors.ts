@@ -13,9 +13,9 @@ export const axiosAssets = axios.create({
   baseURL: `/assets`,
 });
 const axiosInstance = axios.create({
-// baseURL: `https://137.184.199.29:8443/api/v1`,
+ baseURL: `https://137.184.199.29:8443/api/v1`,
 
-   baseURL: `/api/v1`,
+   //baseURL: `/api/v1`,
 });
 
 
