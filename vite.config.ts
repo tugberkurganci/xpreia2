@@ -20,7 +20,6 @@ export default defineConfig({
   base: "/xpreia2/",
   server: {
     host: true, // dış bağlantı için
-    port: process.env.PORT || 4173
     proxy: {
     "/api": "https://monkfish-app-v9x5k.ondigitalocean.app/"
    
