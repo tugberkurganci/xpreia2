@@ -17,7 +17,7 @@ export default defineConfig({
 */
 export default defineConfig({
   plugins: [react()],
-  base: "/xpreia2/",
+  base: "./",
   server: {
     host: true, // dış bağlantı için
     proxy: {
