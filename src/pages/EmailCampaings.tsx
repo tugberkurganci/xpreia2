@@ -339,7 +339,7 @@ const EmailCampaigns: React.FC = () => {
             <div className="flex items-center mt-4">
               <h4 className="mr-2">Rate the Response:</h4>
               <div className="rating flex">
-                {Array.from({ length: 10 }, (_, index) => (
+                {Array.from({ length: 5 }, (_, index) => (
                   <FaStar
                     key={index}
                     onClick={() => handleRatingClick(index)}

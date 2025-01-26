@@ -99,14 +99,17 @@ const CustomerService: React.FC = () => {
 
       
       <div className="border rounded p-4 min-h-32 bg-gray-50 mt-4">
-            <p className="text-gray-400">{'Generated content will appear here...'}</p>
-            {/* HTML Preview */}
-            
-              <div className="html-preview mt-4 p-2 border-t">
-                {generatedReply}
-              </div>
-            
-          </div>
+  <p className="text-gray-400">{'Generated content will appear here...'}</p>
+  {/* HTML Preview */}
+  <div className="html-preview mt-4 p-2 border-t">
+    {generatedReply.split('\n').map((line, index) => (
+      <p key={index} className="mb-2">
+        {line}
+      </p>
+    ))}
+  </div>
+</div>
+
     <div className="comment-input mt-4">
   <h3 className="text-lg font-semibold mb-2">Add a Comment:</h3>
   <textarea
@@ -132,7 +135,7 @@ const CustomerService: React.FC = () => {
         <div className="flex items-center mt-4">
           <h4 className="mr-2">Rate the Response:</h4>
           <div className="rating flex">
-            {Array.from({ length: 10 }, (_, index) => (
+            {Array.from({ length: 5 }, (_, index) => (
               <FaStar
                 key={index}
                 onClick={() => handleRatingClick(index)}
