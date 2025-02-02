@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../utils/axiosInterceptors';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadcompanyInfo } from '../../store/rentalSlice';
 
 export interface Guide {
   id: number;
@@ -15,6 +16,7 @@ const CustomerServiceGuide: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const authState = useSelector((state: any) => state.auth);
   const userId = authState.id;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchGuides = async () => {
@@ -55,6 +57,8 @@ const CustomerServiceGuide: React.FC = () => {
         
         // Update the guides list with the new or updated guide
         setGuides(guides.map(guide => (guide.id === response.data.id ? response.data : guide)));
+        dispatch(loadcompanyInfo(content))
+
       } catch (error) {
         console.error("Failed to update guide", error);
       }

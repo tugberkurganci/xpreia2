@@ -45,7 +45,7 @@ export function storeRentalState(rental:any) {
 }
 
 export function loadRentalState() {
-  const defaultState = { brandTone:""};
+  const defaultState = { brandTone:"",companyInfo:""};
   const rentalStateInStorage = localStorage.getItem("rental");
   if (!rentalStateInStorage) return defaultState;
   try {

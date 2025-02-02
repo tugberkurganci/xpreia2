@@ -15,9 +15,9 @@ export const rentalSlice =createSlice({
             state.brandTone=action.payload;
        
         },
-        loadCar:(state,action)=>{
+        loadcompanyInfo:(state,action)=>{
 
-            state.carId=action.payload;
+            state.companyInfo=action.payload;
            
         },
 
@@ -43,4 +43,4 @@ export const rentalSlice =createSlice({
 
 
 
-export const{ loadRental,deleteRental,loadCar}=rentalSlice.actions;
+export const{ loadRental,deleteRental,loadcompanyInfo}=rentalSlice.actions;
