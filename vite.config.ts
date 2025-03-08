@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-
 /*
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
 });
+
 
 
 
@@ -29,7 +30,7 @@ export default defineConfig({
   server: {
     host: true, //dış bağlantı için
     proxy: {
-    "/api": "https://monkfish-app-v9x5k.ondigitalocean.app/"
+    "/api": "https://walrus-app-jpoux.ondigitalocean.app/"
    
     
   },}}

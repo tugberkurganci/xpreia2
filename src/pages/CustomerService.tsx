@@ -18,16 +18,21 @@ const CustomerService: React.FC = () => {
  
   const handleGenerateReply = async (): Promise<void> => {
     setLoading(true); // Start loading
-    console.log( emailThread + ` .You should only send an email example and respond to the last message.brand tone : ${rentalState.brandTone}`)
+    console.log("Kesinlikle buna similarty search yap :"+ emailThread +"."+ ` .You should only send an email example and respond to the last message.brand tone : ${rentalState.brandTone}`)
     try {
       const response = await axiosInstance.post('/assistants', {
         userId: auth.id,
         chatId: auth.id,
-        userMessage: emailThread + ` .You should only send an email example and respond to the last message.brand tone : ${rentalState.brandTone} .our company info : ${rentalState.companyInfo}.only show content this is not email  campaign`
+        userMessage: emailThread //+ ` .You should only send an email example and respond to the last message.brand tone : ${rentalState.brandTone} .our company info : ${rentalState.companyInfo}.only show content this is not email  campaign`
       });
       
-      setGeneratedReply(response.data);
-      setPreviousReply(response.data);
+      const response2 = await axiosInstance.post('/assistants/normal', {
+        userId: auth.id,
+        chatId: auth.id,
+        userMessage: "Data to be used: " + response.data + ` .brand tone: ${rentalState.brandTone} .our company info: ${rentalState.companyInfo} Specify at the very bottom of the message who provided the employee information, and only respond with the response.`
+      });
+      setGeneratedReply(response2.data);
+      setPreviousReply(response2.data);
       console.log(response.data);
     } catch (error) {
       console.error('Error generating reply:', error);
