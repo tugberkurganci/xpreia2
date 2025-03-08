@@ -13,7 +13,7 @@ export const axiosAssets = axios.create({
   baseURL: `/assets`,
 });
 const axiosInstance = axios.create({
- baseURL: `https://walrus-app-jpoux.ondigitalocean.app//api/v1`,
+ baseURL: `https://walrus-app-jpoux.ondigitalocean.app/api/v1`,
     
    //baseURL: `/api/v1`,
 });
